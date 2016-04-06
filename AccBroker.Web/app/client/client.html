@@ -1,0 +1,81 @@
+﻿<section class="mainbar" data-ng-controller="client as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div class="row-fluid">
+                <div class="form-search">
+                    <input class="input-xlarge search-query"
+                           data-ng-model="vm.clientSearch"
+                           data-ng-keyup="vm.search($event)"
+                           placeholder="live search..." />
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-info"
+                           data-ng-click="vm.refresh()"><i class="glyphicon glyphicon-refresh"></i><span>Refresh</span></a>
+                        <a class="btn btn-info"
+                           href="#/client/new"><i class="glyphicon glyphicon-plus"></i><span>Add Client</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="widget wviolet">
+                    <div data-cc-widget-header title="{{vm.title}}"
+                         subtitle="{{vm.clientFilteredCount}}/{{vm.clientCount}}"
+                         right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
+
+                    <div>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>Code</td>
+                                    <td>Name</td>
+                                    <td>ABN</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="cl in vm.filteredClients"
+                                    data-ng-click="vm.gotoClient(cl)">
+
+                                    <td>
+                                        {{cl.id}}
+                                    </td>
+                                    <td>{{cl.code}}</td>
+                                    <td>
+                                        {{cl.name}}
+                                    </td>
+                                    <td>
+                                        {{cl.abn}}
+                                    </td>
+
+
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+
+
+
+                    </div>
+                    <div class="widget-foot">
+                        <div class="clearfix"></div>
+                        <pagination baundary-link="true"
+                                    on-select-page="vm.pageChanged(page)"
+                                    total-items="vm.ordertransactionFilteredCount"
+                                    page="vm.paging.currentPage"
+                                    items-per-page="vm.paging.pageSize"
+                                    max-size="vm.paging.maxPagesToShow"
+                                    class="pagination-sm"
+                                    previous-text="Prev"
+                                    next-text="Next"
+                                    first-text="First"
+                                    last-text="Last"></pagination>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>

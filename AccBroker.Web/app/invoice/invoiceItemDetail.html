@@ -1,0 +1,71 @@
+﻿<section class="mainbar" data-ng-controller="invoicedetail as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div>
+                <button class="btn btn-info"
+                        data-ng-click="vm.goBack()">
+                    <i class="glyphicon glyphicon-hand-left"></i>Back
+                </button>
+                <!--<button class="btn btn-info"
+                        data-ng-click="vm.cancel()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-remove"></i>Cancel
+                </button>-->
+                <button class="btn btn-info"
+                        data-ng-click="vm.save()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-save"></i>Save
+                </button>
+                <button class="btn btn-danger"
+                        data-ng-click="vm.deleteInvoice()">
+                    <i class="glyphicon glyphicon-trash"></i>Delete
+                </button>
+
+
+            </div>
+            <div class="widget wgreen">
+                <div data-cc-widget-header
+                     title="Edit {{vm.invoice.invoiceNo || 'New Invoice'}} "></div>
+                <div class="widget-content user-details">
+                    <div>
+                        <label>Invoice ID</label>
+                        <input data-ng-model="vm.invoice.id" class="form-control"
+                               data-z-validate
+                               placeholder="Invoice ID" />
+                    </div>
+                    <div>
+                        <label>Name</label>
+                        <input data-ng-model="vm.invoice.invoiceNo" class="form-control"
+                               data-z-validate
+                               placeholder="Name" />
+                    </div>
+                    <div>
+                        <label>Description</label>
+                        <input data-ng-model="vm.invoice.invoiceDescription" />
+                    </div>
+                    <div>
+                        <label>Type</label>
+                        <input data-ng-model="vm.invoice.invoiceType" />
+                    </div>
+                    <div>
+                        <label>Invoice Date</label>
+                        <input data-ng-model="vm.invoice.invoiceDate" />
+                    </div>
+                    <div>
+                        <label>Due Date</label>
+                        <input data-ng-model="vm.invoice.dueDate" />
+                    </div>
+                    <div>
+                        <label>GST</label>
+                        <input data-ng-model="vm.invoice.gst" />
+                    </div>
+                    <div>
+                        <label>Total</label>
+                        <input data-ng-model="vm.invoice.total" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+</section>

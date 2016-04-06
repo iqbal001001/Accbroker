@@ -1,0 +1,253 @@
+﻿<section class="mainbar" data-ng-controller="paymentdetail as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div>
+                <button class="btn btn-info"
+                        data-ng-click="vm.goBack()">
+                    <i class="glyphicon glyphicon-hand-left"></i>Back
+                </button>
+                <button class="btn btn-info"
+                        data-ng-click="vm.cancel()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-remove"></i>Cancel
+                </button>
+                <button class="btn btn-info"
+                        data-ng-click="vm.save()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-save"></i>Save
+                </button>
+                <button class="btn btn-danger"
+                        data-ng-click="vm.deletePayment()">
+                    <i class="glyphicon glyphicon-trash"></i>Delete
+                </button>
+                <span data-ng-show="vm.hasChanges"
+                      class="dissolve-animation ng-hide">
+                    <i class="glyphicon glyphicon-asterisk"></i>
+                </span>
+            </div>
+            <div class="widget wgreen">
+                <div data-cc-widget-header
+                     title="Edit {{vm.payment.name || 'New Payment'}} "
+                     right-text="Company : {{vm.payment.companyName}}"></div>
+                <div class="widget-content user-details">
+                    <table>
+                        <tr>
+                            <td>
+                                <div>
+                                    <label>Payment ID</label>
+                                    <input data-ng-model="vm.payment.id" class="form-control"
+                                           data-z-validate ng-disabled="true"
+                                           placeholder="Payment ID" />
+                                </div>
+                                <div>
+                                    <label>No</label>
+                                    <input data-ng-model="vm.payment.paymentNo" class="form-control"
+                                           data-z-validate
+                                           placeholder="Name" />
+                                </div>
+                                <div>
+                                    <label>Description</label>
+                                    <input data-ng-model="vm.payment.description" />
+                                </div>
+                                <div>
+                                    <label>Payment Type</label>
+                                    <input data-ng-model="vm.payment.paymentType" ng-disabled ="true"/>
+                                    <select data-ng-options="i.id as i.name for i in vm.paymentTypes"
+                                            data-ng-model="vm.payment.paymentType"
+                                            ng-change="vm.selectedPaymentTypeChanged()" data-z-validate>
+                                        <option value=" ">-- choose Payment Type --</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <label>Payment Date</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="vm.payment.paymentDate"
+                                               is-open="vm.openedPaymentDate"
+                                               datepicker-options="dateOptions" date-disabled="disabled(date, mode)"
+                                               close-text="Close" show-weeks="false" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="vm.btnPaymentDate($event)">
+                                                <i class="glyphicon glyphicon-calendar"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label>Client</label>
+                                    <select data-ng-options="iit.id as iit.name for iit in vm.clients"
+                                            data-ng-model="vm.payment.clientID"
+                                            ng-change="vm.selectedClientChanged()">
+                                        <option value=" ">-- choose Client --</option>
+                                    </select>
+                                    <div ng-show="vm.payment.clientID > 0">
+                                        <label>Name : {{vm.payment.clientName}}</label><br />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label>Amount</label>
+                                    <input data-ng-model="vm.payment.amount"
+                                           data-ng-disabled="true" />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                   
+                   
+                </div>
+            </div>
+
+
+            <div class="form-search">
+                <input class="input-xlarge search-query"
+                       data-ng-model="vm.paymentItemSearch"
+                       data-ng-keyup="vm.search($event)"
+                       placeholder="search..." />
+                <div class="btn-group pull-right">
+                    <a class="btn btn-info"
+                       data-ng-click="vm.refresh()"><i class="glyphicon glyphicon-refresh"></i><span>Refresh</span></a>
+                    <a class="btn btn-info"
+                       data-ng-click="vm.addPaymentItem()">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>{{vm.newPaymentItem == false ? "New PaymentItem" : "Add PaymentItem" }}</span>
+                    </a>
+                    <a class="btn btn-info"
+                       data-ng-click="vm.seqUp()" ng-disabled="!vm.canSeqUp">
+                        <i class="glyphicon glyphicon-arrow-up"></i><span></span>
+                    </a>
+                    <a class="btn btn-info"
+                       data-ng-click="vm.seqDown()" ng-disabled="!vm.canSeqDown">
+                        <i class="glyphicon glyphicon-arrow-down"></i><span></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="widget wviolet">
+                    <div data-cc-widget-header title="{{vm.detailTitle}}"
+                         subtitle="{{vm.filteredPaymentItems.length}}/{{vm.paymentItems.length}}"
+                         right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
+
+                    <div>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>Seq</td>
+                                    <td>InvoiceNo</td>
+                                    <td>Amount</td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="item in vm.filteredPaymentItems | orderBy:['sequenceNo']"
+                                    data-ng-click="vm.gotoPaymentItem(item,$index)"
+                                    ng-class="{'info': item.id === vm.paymentItem.id}">
+
+                                    <td>
+                                        {{item.id}}
+                                    </td>
+                                    <td>
+                                        {{item.sequenceNo}}
+                                    </td>
+                                    <td>
+                                        {{item.invoiceNo}}
+
+                                    </td>
+                                    <td>
+                                        {{item.amount}}
+
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger"
+                                                data-ng-click="vm.removePaymentItem($index)">
+                                            <i class="glyphicon glyphicon-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+
+
+
+                    </div>
+                    <div class="widget-foot">
+                        <div class="clearfix"></div>
+                        <pagination baundary-link="true"
+                                    on-select-page="vm.pageChanged(page)"
+                                    total-items="vm.ordertransactionFilteredCount"
+                                    page="vm.paging.currentPage"
+                                    items-per-page="vm.paging.pageSize"
+                                    max-size="vm.paging.maxPagesToShow"
+                                    class="pagination-sm"
+                                    previous-text="Prev"
+                                    next-text="Next"
+                                    first-text="First"
+                                    last-text="Last"></pagination>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+
+                <!--<button class="btn btn-info"
+                data-ng-click="vm.cancel()"
+                data-ng-disabled="!vm.canSave">
+            <i class="glyphicon glyphicon-remove"></i>Cancel
+        </button>-->
+            </div>
+            <div class="widget wgreen">
+                <div data-cc-widget-header
+                     title="Edit {{vm.paymentItem.ProductID || 'New Product'}} "></div>
+                <div class="widget-content user-details">
+                    <table>
+                        <tr>
+                            <td>
+                                <div>
+                                    <label>Invoice No</label>
+                                    <select data-ng-options="i.id as i.invoiceNo for i in vm.invoices"
+                                            data-ng-model="vm.paymentItem.invoiceID"
+                                            ng-change="vm.selectedInvoiceChanged()" data-z-validate>
+                                        <option value=" ">-- choose Invoice --</option>
+                                    </select>
+
+                                    <input data-ng-model="vm.paymentItem.invoiceNo" class="form-control"
+                                           data-z-validate
+                                           placeholder="Invocie No" />
+                                    <a class="btn btn-info"
+                                       data-ng-click="vm.btnSelectInvoice()"><i class="glyphicon glyphicon-search"></i><span></span></a>
+                                    <div ng-show="vm.paymentItem.invoiceID > 0">
+                                        <label>Gst : {{vm.paymentItem.invoiceGst}}</label><br />
+                                        <label>Amount : {{vm.paymentItem.invoiceAmount}}</label><br />
+                                        <label>Total : {{vm.paymentItem.invoiceTotal}}</label><br />
+                                        <label>Balance : {{vm.paymentItem.invoiceTotal}}</label><br />
+                                    </div>
+                                </div>
+                               
+                            </td>
+                            <td>
+                                <div>
+                                    <label>Description</label>
+                                    <input data-ng-model="vm.paymentItem.description" />
+                                </div>
+                                <div>
+                                    <label>Amount</label>
+                                    <input data-ng-model="vm.paymentItem.amount" />
+                                </div>
+                              
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        
+        </div>
+    </section>
+</section>

@@ -1,0 +1,388 @@
+﻿<section class="mainbar" data-ng-controller="invoicedetail as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div>
+                <button class="btn btn-info"
+                        data-ng-click="vm.goBack()">
+                    <i class="glyphicon glyphicon-hand-left"></i>Back
+                </button>
+                <button class="btn btn-info"
+                        data-ng-click="vm.cancel()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-remove"></i>Cancel
+                </button>
+                <button class="btn btn-info"
+                        data-ng-click="vm.save()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-save"></i>Save
+                </button>
+                <button class="btn btn-danger"
+                        data-ng-click="vm.deleteInvoice()">
+                    <i class="glyphicon glyphicon-trash"></i>Delete
+                </button>
+                <span data-ng-show="vm.hasChanges"
+                      class="dissolve-animation ng-hide">
+                    <i class="glyphicon glyphicon-asterisk"></i>
+                </span>
+            </div>
+            <div class="widget wgreen">
+                <div data-cc-widget-header
+                     title="Edit {{vm.invoice.invoiceNo || 'New Invoice'}} "
+                     right-text="Company : {{vm.invoice.companyName}}"
+                     ></div>
+                <div class="widget-content user-details">
+                    <table>
+                        <tr>
+                            <td>
+                                <div>
+                                    <label>Invoice ID</label>
+                                    <input data-ng-model="vm.invoice.id" class="form-control"
+                                           data-z-validate ng-disabled="true"
+                                           placeholder="Invoice ID" />
+                                </div>
+                                <div>
+                                    <label>No</label>
+                                    <input data-ng-model="vm.invoice.invoiceNo" class="form-control"
+                                           data-z-validate
+                                           placeholder="Name" />
+                                </div>
+                                <label>Client</label>
+                                <select data-ng-options="iit.id as iit.name for iit in vm.clients"
+                                        data-ng-model="vm.invoice.clientID"
+                                        ng-change="vm.selectedClientChanged()">
+                                    <option value=" ">-- choose Client --</option>
+                                </select>
+                                <div ng-show="vm.invoice.clientID > 0">
+                                    <label>Name : {{vm.invoice.clientName}}</label><br />
+                                </div>
+                                <div>
+                                    <label>Description</label>
+                                    <input data-ng-model="vm.invoice.invoiceDescription" />
+                                </div>
+                               <!-- <div>
+                                    <label>Type</label>
+                                    <input data-ng-model="vm.invoice.invoiceType" />
+                                </div>-->
+                            </td>
+                            <td>
+
+                                <div>
+                                    <label>Order Date</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="vm.invoice.invoiceDate"
+                                               is-open="vm.openedInvoiceDate"
+                                               datepicker-options="dateOptions" date-disabled="disabled(date, mode)"
+                                               close-text="Close" show-weeks="false" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="vm.btnInvoiceDate($event)">
+                                                <i class="glyphicon glyphicon-calendar"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label>Due Date</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="vm.invoice.dueDate"
+                                               is-open="vm.openedDueDate"
+                                               datepicker-options="dateOptions" date-disabled="disabled(date, mode)"
+                                               close-text="Close" show-weeks="false" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="vm.btnDueDate($event)">
+                                                <i class="glyphicon glyphicon-calendar"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div>
+                                    <label>GST</label>
+                                    <input data-ng-model="vm.invoice.gst"
+                                           data-ng-disabled="true" />
+                                </div>
+                                <div>
+                                    <label>Amount</label>
+                                    <input data-ng-model="vm.invoice.amount"
+                                           data-ng-disabled="true" />
+                                </div>
+                                <div>
+                                    <label>Total</label>
+                                    <input data-ng-model="vm.invoice.total"
+                                           data-ng-disabled="true" />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+
+
+
+
+                </div>
+                <div class="row">
+
+                </div>
+            </div>
+            <div class="widget wblue">
+               
+                <div data-cc-widget-header title="Payment"
+                     subtitle="{{vm.paymentItems.length}}/{{vm.paymentTotal}}"
+                     right-text=""
+                     allow-collapse="true">
+
+                </div>
+                <div class="widget-content text-center text-info collapse">
+              
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>No</td>
+                                    <td>Payment Date</td>
+                                    <td>Amount</td>
+                                    <td>Method</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="item in vm.paymentItems"
+                                    data-ng-click="vm.gotoPayment(item)">
+                                    <td>
+                                        {{item.paymentNo}}
+                                    </td>
+                                    <td>
+                                        {{item.paymentDate | date}}
+                                    </td>
+                                    <td>
+                                        {{item.amount}}
+                                    </td>
+                                    <td>
+                                        {{item.paymentType}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                   
+                </div>
+                <div class="widget-foot">
+                    <div class="clearfix"></div>
+                </div>
+                </div>
+            <div class="form-search">
+                <input class="input-xlarge search-query"
+                       data-ng-model="vm.invoiceItemSearch"
+                       data-ng-keyup="vm.search($event)"
+                       placeholder="search..." />
+                <div class="btn-group pull-right">
+                    <a class="btn btn-info"
+                       data-ng-click="vm.refresh()"><i class="glyphicon glyphicon-refresh"></i><span>Refresh</span></a>
+                    <a class="btn btn-info"
+                       data-ng-click="vm.addInvoiceItem()">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>{{vm.newInvoiceItem == false ? "New InvoiceItem" : "Add InvoiceItem" }}</span>
+                    </a>
+                    <a class="btn btn-info"
+                       data-ng-click="vm.seqUp()" ng-disabled="!vm.canSeqUp">
+                        <i class="glyphicon glyphicon-arrow-up"></i><span></span>
+                    </a>
+                    <a class="btn btn-info"
+                       data-ng-click="vm.seqDown()" ng-disabled="!vm.canSeqDown">
+                        <i class="glyphicon glyphicon-arrow-down"></i><span></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="widget wviolet">
+                    <div data-cc-widget-header title="{{vm.detailTitle}}"
+                         subtitle="{{vm.filteredInvoiceItems.length}}/{{vm.invoiceItems.length}}"
+                         right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
+
+                    <div>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>Seq</td>
+                                    <td>Line Type</td>
+                                    <td>GST</td>
+                                    <td>Amount</td>
+                                    <td>Total</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="item in vm.filteredInvoiceItems | orderBy:['sequenceNo']"
+                                    data-ng-click="vm.gotoInvoiceItem(item,$index)"
+                                    ng-class="{'info': item.id === vm.invoiceItem.id}">
+                                    <td>
+                                        {{item.id}}
+                                    </td>
+                                    <td>
+                                        {{item.sequenceNo}}
+                                    </td>
+                                    <td>
+                                        {{item.invoiceType == 1 ? "Product" : "Json" }}
+                                    </td>
+                                    <td>
+                                        {{item.gst}}
+                                    </td>
+                                    <td>
+                                        {{item.amount}}
+                                    </td>
+                                    <td>
+                                        {{item.total}}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger"
+                                                data-ng-click="vm.removeInvoiceItem($index)">
+                                            <i class="glyphicon glyphicon-trash"></i>
+                                        </button>
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+
+
+
+                    </div>
+                    <div class="widget-foot">
+                        <div class="clearfix"></div>
+                        <pagination baundary-link="true"
+                                    on-select-page="vm.pageChanged(page)"
+                                    total-items="vm.ordertransactionFilteredCount"
+                                    page="vm.paging.currentPage"
+                                    items-per-page="vm.paging.pageSize"
+                                    max-size="vm.paging.maxPagesToShow"
+                                    class="pagination-sm"
+                                    previous-text="Prev"
+                                    next-text="Next"
+                                    first-text="First"
+                                    last-text="Last"></pagination>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+
+                <!--<button class="btn btn-info"
+                        data-ng-click="vm.cancel()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-remove"></i>Cancel
+                </button>-->
+            </div>
+            <div class="widget wgreen">
+                <div data-cc-widget-header
+                     title="Edit {{vm.invoiceItem.id || 'New Item'}} "></div>
+                <iv class="widget-content user-details">
+                    <table>
+                        <tr>
+                            <td>
+                                <div>
+                                    <label>Type</label>
+                                    <select data-ng-options="iit.id as iit.name for iit in vm.invoiceItemTypes"
+                                            data-ng-model="vm.invoiceItem.invoiceType"
+                                            ng-change="vm.selectedTypeChanged()">
+                                        <option value=" ">-- choose Type --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Description</label>
+                                    <input data-ng-model="vm.invoiceItem.description" />
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <label>Discount</label>
+                                    <input data-ng-model="vm.invoiceItem.discount" />
+                                </div>
+                                <div>
+                                    <label>Gst</label>
+                                    <input data-ng-model="vm.invoiceItem.gst" />
+                                </div>
+
+                            </td>
+                            <td>
+                                <div>
+                                    <label>Amount</label>
+                                    <input data-ng-model="vm.invoiceItem.amount" />
+                                </div>
+                                <div>
+                                    <label>Total</label>
+                                    <input data-ng-model="vm.invoiceItem.total" />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table ng-show="vm.invoiceItem.invoiceType == 1">
+                        <tr>
+                            <td>
+                                <div>
+                                    <label>Product</label>
+                                    <select data-ng-options="p.id as p.productCode for p in vm.products"
+                                            data-ng-model="vm.invoiceItem.productInvoiceItem.productID"
+                                            ng-change="vm.selectedProductChanged()" data-z-validate>
+                                        <option value=" ">-- choose Product --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Code</label>
+                                    <input data-ng-model="vm.invoiceItem.productInvoiceItem.productCode" />
+                                </div>
+                                <div>
+                                    <label>Name</label>
+                                    <input data-ng-model="vm.invoiceItem.productInvoiceItem.productName" />
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <label>Quantity</label>
+                                    <input data-ng-model="vm.invoiceItem.productInvoiceItem.quantity" />
+                                </div>
+                                <div>
+                                    <label>Unit Price</label>
+                                    <input data-ng-model="vm.invoiceItem.productInvoiceItem.unitPrice" />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table ng-show="vm.invoiceItem.invoiceType == 2">
+                        <tr>
+                            <td>
+                                <!--<div>
+                                    <label>Product</label>
+                                    <select data-ng-options="p.id as p.productCode for p in vm.products"
+                                            data-ng-model="vm.invoiceItem.productInvoiceItem.productID"
+                                            ng-change="vm.selectedProductChanged()" data-z-validate>
+                                        <option value=" ">-- choose Product --</option>
+                                    </select>
+                                </div>-->
+                                <div>
+                                    <label>Json</label>
+                                    <input data-ng-model="vm.invoiceItem.jsonInvoiceItem.productCode" />
+                                </div>
+
+                            </td>
+                            <td>
+
+                        </tr>
+                    </table>
+
+
+
+
+
+            </div>
+        </div>
+
+
+
+        </div>
+    </section>
+</section>

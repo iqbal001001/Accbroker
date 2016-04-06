@@ -1,0 +1,122 @@
+﻿<section id="dashboard-view" class="mainbar" data-ng-controller="dashboard as vm">
+    <section class="matter">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="today-datas">
+                        <li class="blightblue">
+                            <div class="pull-left">
+                                <span><i class="fa fa-beer"></i></span>
+                            </div>
+                            <div class="datas-text pull-right">
+                                <span class="bold">{{vm.invoiceowing}}</span>Owing
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+
+                        <li class="borange">
+                            <div class="pull-left">
+                                <span ng-show="0 < vm.invoicedueover0to29daystotal"><i class="fa fa-unlock"></i></span>
+                                <span ng-hide="0 < vm.invoicedueover0to29daystotal"><i class="fa fa-unlock"></i></span>
+                            </div>
+                            <div class="datas-text pull-right">
+                                <span class="bold">{{vm.invoicedueover0to29daystotal}}</span>over due
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="borange">
+                            <div class="pull-left">
+                                <span ng-show="0 < vm.invoicedueover30to59daystotal"><i class="fa fa-unlock"></i></span>
+                                <span ng-hide="0 < vm.invoicedueover30to59daystotal"><i class="fa fa-lock"></i></span>
+                            </div>
+                            <div class="datas-text pull-right">
+                                <span class="bold">{{vm.invoicedueover30to59daystotal}}</span>over 30 due
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="borange">
+                            <div class="pull-left">
+                                <span ng-show="0 < vm.invoicedueover60to89daystotal"><i class="fa fa-unlock"></i></span>
+                                <span ng-hide="0 < vm.invoicedueover60to89daystotal"><i class="fa fa-lock"></i></span>
+                            </div>
+                            <div class="datas-text pull-right">
+                                <span class="bold">{{vm.invoicedueover60to89daystotal}}</span>over 60 due
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="borange">
+                            <div class="pull-left">
+                                <span ng-show="0 < vm.invoicedueover90to119daystotal"><i class="fa fa-unlock"></i></span>
+                                <span ng-hide="0 < vm.invoicedueover90to119daystotal"><i class="fa fa-lock"></i></span>
+                            </div>
+                            <div class="datas-text pull-right">
+                                <span class="bold">{{vm.invoicedueover90to119daystotal}}</span>over 90 due
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="borange">
+                            <div class="pull-left">
+                                <span ng-show="0 < vm.invoicedueover120andabovedaystotal"><i class="fa fa-unlock"></i></span>
+                                <span ng-hide="0 < vm.invoicedueover120andabovedaystotal"><i class="fa fa-lock"></i></span>
+                            </div>
+                            <div class="datas-text pull-right">
+                                <span class="bold">{{vm.invoicedueover120andabovedaystotal}}</span>over 120 due
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="widget wviolet">
+                        <div data-cc-widget-header title="Invoice due"
+                             allow-collapse="true"></div>
+                        <div class="widget-content text-center text-info">
+                            <table class="table table-condensed table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>InvoiceNo</th>
+                                        <th>Client</th>
+                                        <th>InvoiceDate</th>
+                                        <th>DueDate</th>
+                                        <th>Total</th>
+                                        <th>Payment</th>
+                                        <th>Paid</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-ng-repeat="i in vm.invoices">
+                                        <td>{{i.invoiceNo}}</td>
+                                        <td>{{i.client}}</td>
+                                        <td>{{i.invoiceDate | date}}</td>
+                                        <td>{{i.dueDate  | date}}</td>
+                                        <td>{{i.total}}</td>
+                                        <td>{{i.paymentAmount}}</td>
+                                        <td><span ng-show={{i.paid}}><i class="glyphicon glyphicon-thumbs-up"></i></span><span ng-hide={{i.paid}}><i class="glyphicon glyphicon-thumbs-down"></i></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="widget-foot">
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="widget wgreen">
+                        <div data-cc-widget-header title="{{vm.news.title}}"
+                             allow-collapse="true"></div>
+                        <div class="widget-content text-center text-info">
+                            <small>{{vm.news.description}}</small>
+                        </div>
+                        <div class="widget-foot">
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>

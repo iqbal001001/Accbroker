@@ -1,0 +1,67 @@
+﻿<section class="mainbar" data-ng-controller="productdetail as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div>
+                <button class="btn btn-info"
+                        data-ng-click="vm.goBack()">
+                    <i class="glyphicon glyphicon-hand-left"></i>Back
+                </button>
+                <button class="btn btn-info"
+                        data-ng-click="vm.cancel()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-remove"></i>Cancel
+                </button>
+                <button class="btn btn-info"
+                        data-ng-click="vm.save()"
+                        data-ng-disabled="!vm.canSave">
+                    <i class="glyphicon glyphicon-save"></i>Save
+                </button>
+                <button class="btn btn-danger"
+                        data-ng-click="vm.deleteProduct()">
+                    <i class="glyphicon glyphicon-trash"></i>Delete
+                </button>
+                <span data-ng-show="vm.hasChanges"
+                      class="dissolve-animation ng-hide">
+                    <i class="glyphicon glyphicon-asterisk"></i>
+                </span>
+            </div>
+            <div class="widget wgreen">
+                <div data-cc-widget-header
+                     title="Edit {{vm.product.name || 'New Product'}} "></div>
+                <div class="widget-content user-details">
+                    <div>
+                        <label>Product ID</label>
+                        <input data-ng-model="vm.product.id" class="form-control"
+                               data-z-validate ng-disabled="true"
+                               placeholder="Product ID" />
+                    </div>
+                    <div>
+                        <label>Code</label>
+                        <input data-ng-model="vm.product.productCode" class="form-control"
+                               data-z-validate
+                               placeholder="Name" />
+                    </div>
+                    <div>
+                        <label>Name</label>
+                        <input data-ng-model="vm.product.productName" class="form-control"
+                               data-z-validate
+                               placeholder="Name" />
+                    </div>
+                    <div>
+                        <label>Description</label>
+                        <input data-ng-model="vm.product.productDescription" />
+                    </div>
+                    <div>
+                        <label>Cost Price</label>
+                        <input data-ng-model="vm.product.costPrice" />
+                    </div>
+                    <div>
+                        <label>Sell Price</label>
+                        <input data-ng-model="vm.product.sellPrice" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+</section>
