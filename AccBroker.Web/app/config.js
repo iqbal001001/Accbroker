@@ -12,7 +12,14 @@
 
     var events = {
         controllerActivateSuccess: 'controller.activateSuccess',
-        spinnerToggle: 'spinner.toggle'
+        spinnerToggle: 'spinner.toggle',
+        companyChanged: 'company.changed',
+        storage: {
+            error: 'store.error',
+            storeChanged: 'store.changed',
+            wipChanged: 'wip.changed'
+            
+        }
     };
 
     var KeyCodes = {
@@ -35,7 +42,7 @@
 
     var config = {
         appErrorPrefix: '[HT Error] ', //Configure the exceptionHandler decorator
-        docTitle: 'HotTowel: ',
+        docTitle: 'AccBroker: ',
         events: events,
         remoteServiceName: remoteServiceName,
         version: '2.1.0',
@@ -57,4 +64,43 @@
         cfg.config.spinnerToggleEvent = config.events.spinnerToggle;
     }]);
     //#endregion
+
+    // reference : http://www.webdeveasy.com/interceptors-in-angularjs-and-useful-examples/
+
+    //app.factory('sessionInjector', ['SessionService', function (SessionService) {
+    //    var sessionInjector = {
+    //        request: function (config) {
+    //            if (!SessionService.isAnonymus) {
+    //                config.headers['x-session-token'] = SessionService.token;
+    //            }
+    //            return config;
+    //        }
+    //    };
+    //    return sessionInjector;
+    //}]);
+    //app.config(['$httpProvider', function ($httpProvider) {
+    //    $httpProvider.interceptors.push('sessionInjector');
+    //}]);
+
+    app.factory('addBaseUrl', ['$rootScope', function ($rootScope) {
+        var urlMarker = {
+            request: function (config) {
+                // extend config.url to add a base url to the request
+                if (config.url.indexOf('api') !== -1 ||
+                    config.url.indexOf('token') !== -1 ||
+                    config.url.indexOf('manage') !== -1) {
+                    config.url = $rootScope.baseUrl + config.url;
+                }
+
+                return config; //|| $q.when(config);
+            }
+        };
+        return urlMarker;
+    }]);
+    app.config(['$httpProvider', function ($httpProvider) {
+        $httpProvider.interceptors.push('addBaseUrl');
+    }]);
+
+
+
 })();

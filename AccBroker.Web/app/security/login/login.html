@@ -1,0 +1,37 @@
+﻿<section class="mainbar" data-ng-controller="login as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div class="row">
+                <div class="widget wviolet">
+                    <div >
+                        <div ng-hide="vm.message">
+                            <h3>Login</h3>
+                            <hr />
+                            <form name="vm.loginForm" ng-submit="vm.login()">
+                                <auto:fields fields="vm.schema" data="vm.user" options="vm.options"></auto:fields>
+                                <button type="submit" class="btn btn-block" ng-class="{'is-valid':vm.loginForm.$valid}">
+                                    <i class="glyphicon glyphicon-log-in">Login</i>
+                                </button>
+                             
+                            </form>
+                            <br>
+                            <p class="text-muted text-center">Don't have an account? <a href="/#/join" ng-click="vm.closeModal()">Register now!</a></p>
+                            <p class="text-muted text-center">Forgot your password? <a href="/#/forgotpassword" ng-click="vm.closeModal()">Reset your password</a></p>
+                            <div ng-if="security.externalLogins.length > 0">
+                                <hr />
+                                <h4>Or Login With</h4>
+                                <button class="btn" ng-repeat="login in security.externalLogins"
+                                        ng-class="{googlered : (login.name === 'Google'),facebookblue : (login.name === 'Facebook'), twitterblue : (login.name === 'Twitter'), microsoftblue : (login.name === 'Microsoft')}"
+                                        ng-bind="login.name" ng-click="security.loginWithExternal(login, user)"></button>
+                            </div>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3" ng-show="vm.message">
+                            <p class="lead" ng-bind="vm.message"></p>
+                        </div>
+
+                    </div>
+                    </div>
+                </div>
+                </div>
+</section>
+</section>

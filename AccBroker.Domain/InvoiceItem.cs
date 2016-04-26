@@ -17,7 +17,7 @@ namespace AccBroker.Domain
 
         public decimal? Amount { get; set; }
 
-        [StringLength(10)]
+        [StringLength(100)]
         public string Description { get; set; }
 
         public int InvoiceID { get; set; }
@@ -30,6 +30,12 @@ namespace AccBroker.Domain
         public byte[] CreateDate { get; set; }
 
         public DateTime? ChangeDate { get; set; }
+
+        [StringLength(20)]
+        public string CreateUser { get; set; }
+
+        [StringLength(20)]
+        public string ChangeUser { get; set; }
 
         public decimal? Discount { get; set; }
 

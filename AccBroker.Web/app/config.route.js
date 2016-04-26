@@ -179,6 +179,86 @@
 
                     }
                 }
+            }, {
+                url: '/workinprogress',
+                config: {
+                    title: 'workinprogress',
+                    templateUrl: 'app/wip/wip.html',
+                    settings: {
+                        content: '<i class="glyphicon glyphicon-asterisk"></i> Work In Progress'
+                    }
+                }
+            }, {
+                url: '/login',
+                config: {
+                    title: 'login',
+                    templateUrl: 'app/security/login/login.html',
+                    settings: {
+                        nav: 0,
+                        content: 'Login'
+                    }
+                }
+            }, {
+                url: '/join',
+                config: {
+                    title: 'join',
+                    templateUrl: 'app/security/join/join.html',
+                    settings: {
+                        nav: 0,
+                        content: 'Join'
+                    }
+                }
+            }, {
+                url: '/forgotpassword',
+                config: {
+                    title: 'forgot password',
+                    templateUrl: 'app/security/forgotPassword/forgotPassword.html',
+                    settings: {
+                        nav: 0,
+                        content: 'Forgot Password'
+                    }
+                }
+            },
+            {
+                url: '/manage',
+                config: {
+                    title: 'manage',
+                    templateUrl: 'app/security/manage/manage.html',
+                    settings: {
+                        nav: 0,
+                        content: 'Manage'
+                    }
+                }
+            }, {
+                url: '/confirmemail',
+                config: {
+                    title: 'confirm email',
+                    templateUrl: 'app/security/confirmEmail/confirmEmail.html',
+                    settings: {
+                        nav: 0,
+                        content: 'Confirm Email'
+                    }
+                }
+            }, {
+                url: '/resetpassword',
+                config: {
+                    title: 'reset password',
+                    templateUrl: 'app/security/resetPassword/resetPassword.html',
+                    settings: {
+                        nav: 0,
+                        content: 'Reset Password'
+                    }
+                }
+            }, {
+                url: '/registerExternal',
+                config: {
+                    title: 'register external',
+                    templateUrl: 'app/security/registerExternal/registerexternal.html',
+                    settings: {
+                        nav: 0,
+                        content: 'Register External'
+                    }
+                }
             }
 
         ];

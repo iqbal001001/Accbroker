@@ -1,0 +1,73 @@
+﻿<section class="mainbar" data-ng-controller="wip as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div class="row-fluid">
+                <div class="form-search">
+                    
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="widget wviolet">
+                    <div data-cc-widget-header title="{{vm.title}}"
+                         subtitle=""
+                         right-text=""></div>
+
+                    <div>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td>entity</td>
+                                    <td>id</td>
+                                    <td>Description</td>
+                                    <td>State</td>
+                                    <td>Date</td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="wip in vm.wips"
+                                    data-ng-click="vm.gotoWip(wip)">
+                                    <td>
+                                        {{wip.entity}}
+                                    </td>
+                                    <td>
+                                        {{wip.id}}
+                                    </td>
+                                    <td>
+                                        {{wip.description}}
+                                    </td>
+                                    <td>
+                                        {{wip.state}}
+                                    </td>
+                                    <td>
+                                        {{wip.date | date}}
+                                    </td>
+                                   
+                                   <td>
+                                       <button class="btn btn-danger"
+                                               data-ng-click="vm.deleteWip($index)">
+                                           <i class="glyphicon glyphicon-trash"></i>
+                                       </button>
+                                   </td>
+
+
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+
+
+
+                    </div>
+                    <div class="widget-foot">
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>

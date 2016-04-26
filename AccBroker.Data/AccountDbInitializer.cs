@@ -265,7 +265,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice1.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 110
                     }
                 }
@@ -289,7 +288,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice2.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 110
                     },
                     new PaymentItem 
@@ -298,7 +296,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice4.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 110
                     }
 
@@ -323,7 +320,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice2.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 200
                     },
                     new PaymentItem 
@@ -332,7 +328,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice4.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 100
                     }
 
@@ -357,7 +352,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice2.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 100
                     },
                     new PaymentItem 
@@ -366,7 +360,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice3.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 200
                     },
                     new PaymentItem 
@@ -375,7 +368,6 @@ namespace AccBroker.Data
                         InvoiceNo = invoice4.InvoiceNo,
                         Description = "desc",
                         ChangeDate = DateTime.Now,
-                        GST = 0,
                         Amount = 100
                     }
                 }

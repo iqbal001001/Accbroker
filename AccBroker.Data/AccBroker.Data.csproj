@@ -62,13 +62,27 @@
     <Compile Include="Migrations\201604060608390_InitialCreate.Designer.cs">
       <DependentUpon>201604060608390_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604061703089_updateStringlength.cs" />
+    <Compile Include="Migrations\201604061703089_updateStringlength.Designer.cs">
+      <DependentUpon>201604061703089_updateStringlength.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604061707150_Remove GST from PaymentItem.cs" />
+    <Compile Include="Migrations\201604061707150_Remove GST from PaymentItem.Designer.cs">
+      <DependentUpon>201604061707150_Remove GST from PaymentItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604160538016_Added Fields User Create Change.cs" />
+    <Compile Include="Migrations\201604160538016_Added Fields User Create Change.Designer.cs">
+      <DependentUpon>201604160538016_Added Fields User Create Change.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PaymentRepostory.cs" />
     <Compile Include="ProductRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +98,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201604060608390_InitialCreate.resx">
       <DependentUpon>201604060608390_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604061703089_updateStringlength.resx">
+      <DependentUpon>201604061703089_updateStringlength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604061707150_Remove GST from PaymentItem.resx">
+      <DependentUpon>201604061707150_Remove GST from PaymentItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604160538016_Added Fields User Create Change.resx">
+      <DependentUpon>201604160538016_Added Fields User Create Change.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

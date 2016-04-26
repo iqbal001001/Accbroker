@@ -3,15 +3,13 @@
 
     var serviceId = 'datacontext';
     angular.module('app').factory(serviceId,
-        ['$rootScope', 'common', 'config',
-            'repositories', datacontext]);
+        ['$rootScope', 'common', 'config', 'repositories', 'localStorage', datacontext]);
 
-    function datacontext($rootScope, common, config,
-        repositories) {
+    function datacontext($rootScope, common, config, repositories, localStorage) {
 
         var getLogFn = common.logger.getLogFn;
-        //var hostEndPoint = "http://localhost:58242"
-        var hostEndPoint = "http://accbrokerapi-alpha.azurewebsites.net"; 
+        var hostEndPoint = "";
+        //var hostEndPoint = "http://accbrokerapi-alpha.azurewebsites.net"; 
         var events = config.events;
         var log = getLogFn(serviceId);
         var logError = getLogFn(serviceId, 'error');
@@ -25,7 +23,7 @@
 
 
         var service = {
-           
+            localStorage: localStorage
         };
 
         init();
@@ -52,6 +50,28 @@
                     }
                 });
             });
+        }
+
+        function prime() {
+            if (primePromise) return primePromise;
+
+            //var storageEnabledAndHasData = zStorage.load(manager);
+
+            primePromise = $q.all([service.company.getCompanies('code')])
+
+            //primePromise = storageEnabledAndHasData ?
+            //    $q.when('Loading entities and metadata from local storage') :
+            //    $q.all([service.employee.getAll(), service.customer.getAll(), service.product.getAll()])
+            //.then(extendMetadata);
+
+
+            return primePromise.then(success);
+
+            function success() {
+               // service.lookup.setLookups();
+                //zStorage.save();
+                log('Prime the data');
+            }
         }
 
     }

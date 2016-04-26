@@ -14,6 +14,7 @@ namespace AccBroker.WebAPI
         public ApplicationUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
+           EmailService = new EmailService();
         }
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)

@@ -28,36 +28,56 @@
             <div class="widget wgreen">
                 <div data-cc-widget-header
                      title="Edit {{vm.product.name || 'New Product'}} "></div>
-                <div class="widget-content user-details">
+                <div ng-form="productdetail" class="widget-content user-details">
                     <div>
-                        <label>Product ID</label>
+                        <label for="companyId">Product ID</label>
                         <input data-ng-model="vm.product.id" class="form-control"
                                data-z-validate ng-disabled="true"
                                placeholder="Product ID" />
                     </div>
-                    <div>
-                        <label>Code</label>
-                        <input data-ng-model="vm.product.productCode" class="form-control"
-                               data-z-validate
-                               placeholder="Name" />
+                    <div class="control-group" ng-class="{ 'has-error': productdetail.code.$invalid }">
+                        <label class="control-label" for="code">Code</label>
+                        <input data-ng-model="vm.product.productCode" name="code" type="text"
+                               class="form-control"
+                               placeholder="code"
+                               required ng-minlength="3" ng-maxlength="6" unique="vm.checkCode(code)" />
+                        <ng-messages for="productdetail.code.$error" ng-show="productdetail.code.$dirty">
+                            <ng-message class="help-block" when="checking">checking code...</ng-message>
+                            <ng-message class="help-block" when="unique">title must be unique</ng-message>
+                        </ng-messages>
+                        <ng-messages for="productdetail.code.$error" ng-show="productdetail.code.$touched">
+                            <ng-message class="help-block" when="required">required</ng-message>
+                            <ng-message class="help-block" when="minlength,maxlength">min 3 Char</ng-message>
+                            <ng-message class="help-block" when="unique">title must be unique</ng-message>
+                        </ng-messages>
                     </div>
                     <div>
                         <label>Name</label>
                         <input data-ng-model="vm.product.productName" class="form-control"
-                               data-z-validate
-                               placeholder="Name" />
+                               name="name" placeholder="Name"
+                               required ng-maxlength="50" />
+                        <ng-messages for="productdetail.name.$error" ng-show="productdetail.name.$touched">
+                            <ng-message class="help-block" when="required">required</ng-message>
+                            <ng-message class="help-block" when="maxlength">min 3 Char</ng-message>
+                        </ng-messages>
                     </div>
                     <div>
-                        <label>Description</label>
-                        <input data-ng-model="vm.product.productDescription" />
+                        <label class="control-label" for="description">Description</label>
+                        <input data-ng-model="vm.product.productDescription" name="description"
+                               placeholder="description" 
+                               ng-maxlength="100" />
+                        <ng-messages for="productdetail.abn.$error" ng-show="productdetail.abn.$touched">
+                            <ng-message class="help-block" when="required">required</ng-message>
+                            <ng-message class="help-block" when="maxlength">8 Char</ng-message>
+                        </ng-messages>
                     </div>
                     <div>
-                        <label>Cost Price</label>
-                        <input data-ng-model="vm.product.costPrice" />
+                        <label class ="control-label" for="costPrice">Cost Price</label>
+                        <input data-ng-model="vm.product.costPrice" name="costPrice" placeholder="Cost Price"/>
                     </div>
                     <div>
-                        <label>Sell Price</label>
-                        <input data-ng-model="vm.product.sellPrice" />
+                        <label class="control-label" for="sellPrice">Sell Price</label>
+                        <input data-ng-model="vm.product.sellPrice" name="sellPrice" placeholder="Sell Price" />
                     </div>
                 </div>
             </div>

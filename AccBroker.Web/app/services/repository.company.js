@@ -16,6 +16,8 @@
 			this.getCompanies = getCompanies;
 			this.getCount = getCount;
 			this.getCompany = getCompany;
+			this.getCompanyByCode = getCompanyByCode;
+			this.codeAvailable = codeAvailable;
 			this.saveCompany = saveCompany;
 			this.deleteCompany = deleteCompany;
 			this.updateCompany = updateCompany;
@@ -54,8 +56,15 @@
 		}
 
 		function getCompany(ComNo) {
-			//http://localhost:57148
 			return $http.get(this.hostEndPoint + "/api/Company/" + ComNo);
+		}
+
+		function getCompanyByCode(code) {
+		    return $http.get(this.hostEndPoint + "/api/Company/" + code + "/Code");
+		}
+
+		function codeAvailable(id,code) {
+		    return $http.get(this.hostEndPoint + "/api/Company/" + id + "/" + code + "/codeAvailable");
 		}
 
 		function getCompanyCount() {

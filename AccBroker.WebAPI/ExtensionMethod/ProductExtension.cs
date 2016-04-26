@@ -15,9 +15,9 @@ namespace AccBroker.WebAPI
             return new ProductDTO
             {
                 ID = product.ID,
-                ProductCode = product.ProductCode,
-                ProductName = product.ProductName,
-                ProductDescription = product.ProductDescription,
+                ProductCode = product.ProductCode != null ? product.ProductCode.Trim() : null,
+                ProductName = product.ProductName != null ? product.ProductName.Trim() : null,
+                ProductDescription = product.ProductDescription != null ? product.ProductDescription.Trim() : null,
                 CostPrice = product.CostPrice,
                 SellPrice = product.SellPrice,
                 Concurrency = product.Concurrency,

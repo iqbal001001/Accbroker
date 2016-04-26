@@ -6,14 +6,16 @@
         ['repository.abstract','$http', RepositoryClient]);
 
 	function RepositoryClient(AbstractRepository, $http) {
-		var entityName = 'Client';
+	    var resource = "/api/Client";
 
 		function Ctor(endpoint) {
 			this.serviceId = serviceId;
-			this.entityName = entityName;
+			this.resource = resource;
 			this.hostEndPoint = endpoint;
 			//Exposed data access functions
 			this.getClients = getClients;
+			this.getClientByCode = getClientByCode;
+			this.codeAvailable = codeAvailable;
 			this.getCount = getCount;
 			this.getClient = getClient;
 			this.saveClient = saveClient;
@@ -46,21 +48,29 @@
 				query = query + "feilds=" + feilds;
 			}
 
-			return $http.get(this.hostEndPoint + "/api/Client" + query);
+			return $http.get(this.hostEndPoint + resource + query);
+		}
+
+		function getClientByCode(code) {
+		    return $http.get(this.hostEndPoint + resource + "/" + code + "/Code");
+		}
+
+		function codeAvailable(id, code) {
+		    return $http.get(this.hostEndPoint + resource + "/" + id + "/" + code + "/codeAvailable");
 		}
 
 		function getCount() {
-			return $http.get(this.hostEndPoint + "/api/Client");
+		    return $http.get(this.hostEndPoint + resource);
 		}
 
 		function getClient(ComNo) {
 			//http://localhost:57148
-			return $http.get(this.hostEndPoint + "/api/Client/" + ComNo);
+		    return $http.get(this.hostEndPoint + resource + "/" + ComNo);
 		}
 
 		function getClientCount() {
 
-			return $http.get(this.hostEndPoint + "/api/Client/" + ComNo);
+		    return $http.get(this.hostEndPoint + resource + "/" + ComNo);
 		}
 
 		function saveClient(Client) {
@@ -74,7 +84,7 @@
 			var request = $http({
 				method: "post",
 				headers:headers,
-				url: this.hostEndPoint + "/api/Client",
+				url: this.hostEndPoint + resource,
 				data: Client
 			});
 			return request
@@ -91,7 +101,7 @@
 			var request = $http({
 				method: "delete",
 				//headers:  headers,
-				url: this.hostEndPoint + "/api/Client/" + ComNo
+				url: this.hostEndPoint + resource + "/" + ComNo
 			});
 			
 			return request;
@@ -101,7 +111,7 @@
 
 			var request = $http({
 				method: "put",
-				url: this.hostEndPoint + "/api/Client/" + ComNo,
+				url: this.hostEndPoint + resource  + "/" + ComNo,
 				data: Client
 			});
 			return request;

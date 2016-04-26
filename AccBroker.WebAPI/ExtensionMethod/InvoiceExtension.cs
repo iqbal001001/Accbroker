@@ -15,8 +15,8 @@ namespace AccBroker.WebAPI
             return new InvoiceDTO
             {
                 ID = invoice.ID,
-                InvoiceNo = invoice.InvoiceNo,
-                InvoiceDescription = invoice.InvoiceDescription,
+                InvoiceNo = invoice.InvoiceNo != null ? invoice.InvoiceNo.Trim() : null,
+                InvoiceDescription = invoice.InvoiceDescription != null ? invoice.InvoiceDescription.Trim() : null,
                 BillingAddress = invoice.BillingAddress,
                 Total = invoice.Amount +invoice.GST,
                 Amount = invoice.Amount,

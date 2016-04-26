@@ -23,7 +23,7 @@ namespace AccBroker.Domain
         [StringLength(3)]
         public string Code { get; set; }
 
-        [StringLength(10)]
+        [StringLength(50)]
         public string Name { get; set; }
 
         [StringLength(10)]
@@ -38,6 +38,11 @@ namespace AccBroker.Domain
 
         public DateTime? ChangeDate { get; set; }
 
+        [StringLength(20)]
+        public string CreateUser { get; set; }
+
+        [StringLength(20)]
+        public string ChangeUser { get; set; }
         
         public virtual ICollection<Address> Addresses { get; set; }
 

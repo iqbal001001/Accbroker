@@ -16,6 +16,7 @@ using System.Data.Entity.Validation;
 
 namespace AccBroker.WebAPI.Controllers
 {
+    [Authorize]
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class InvoiceController : ApiController
     {
@@ -31,8 +32,8 @@ namespace AccBroker.WebAPI.Controllers
         // GET: api/Invoice
         [Route("api/Invoice", Name = "InvoiceList")]
         public IHttpActionResult Get(string sort = "ID", string fields = null,
-            int page = 1, int pageSize = 5, 
-            string searchInvoiceNo = null, 
+            int page = 1, int pageSize = 5,
+            string searchInvoiceNo = null,
             int? searchCompanyId = null,
             int? searchClientId = null)
         {
@@ -61,7 +62,7 @@ namespace AccBroker.WebAPI.Controllers
 
                 if (searchCompanyId != null)
                 {
-                    invoices = invoices.Where(i => i.CompanyID == searchCompanyId);
+                    invoices = invoices.Where(i => i.CompanyID.Value == searchCompanyId.Value);
                 }
 
                 if (searchClientId != null)
@@ -107,7 +108,7 @@ namespace AccBroker.WebAPI.Controllers
                     Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
 
 
-               
+
 
                 var query = invoices
                     .ApplySort(sort)
@@ -124,7 +125,7 @@ namespace AccBroker.WebAPI.Controllers
                 return InternalServerError(ex);
             }
         }
-       
+
 
         // GET: api/Invoice/5
         [Route("api/invoice/{id}")]
@@ -156,6 +157,54 @@ namespace AccBroker.WebAPI.Controllers
 
         }
 
+        [Route("api/invoice/{companyId}/{invoiceNo}/invoiceNo")]
+        public IHttpActionResult GetByInvoiceNo(int companyId, string invoiceNo)
+        {
+            try
+            {
+                var query = _InvoiceRepo.Get()
+                    .Where(i => i.CompanyID == companyId);
+
+                var company = query.FirstOrDefault<Invoice>(i => i.InvoiceNo == invoiceNo);
+                if (company == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(company.ToDTO());
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+
+        }
+
+        [HttpGet]
+        [Route("api/invoice/{companyId}/NextInvoiceNo")]
+        public IHttpActionResult CodeAvailable(int companyId)
+        {
+            try
+            {
+                var query = _InvoiceRepo.Get()
+                    .Where(i => i.CompanyID == companyId);
+
+                var lastInvoiceNo = query.OrderByDescending(i => i.InvoiceNo).ToList().Select(i => i.InvoiceNo);
+
+                var nextInvoiceNo = Int32.Parse(lastInvoiceNo.ToString()) + 1;
+
+                return Ok(new { nextInvoiceNo = nextInvoiceNo });
+
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+
+        }
+
         // POST: api/Comapny
         [Route("api/invoice")]
         public IHttpActionResult Post([FromBody]InvoiceDTO value)
@@ -165,6 +214,13 @@ namespace AccBroker.WebAPI.Controllers
                 if (value == null)
                 {
                     return BadRequest();
+                }
+
+                string userName = null;
+                if (HttpContext.Current != null && HttpContext.Current.User != null
+                   && HttpContext.Current.User.Identity.Name != null)
+                {
+                    userName = HttpContext.Current.User.Identity.Name;
                 }
 
                 if (value.Amount != value.InvoiceItems.Sum(it => it.Amount))
@@ -178,6 +234,9 @@ namespace AccBroker.WebAPI.Controllers
                 }
 
                 var invoice = value.ToDomain();
+                invoice.CreateUser = userName;
+                invoice.ChangeUser = userName;
+                invoice.Concurrency = Guid.NewGuid();
 
                 _InvoiceRepo.Add(invoice);
 
@@ -206,7 +265,14 @@ namespace AccBroker.WebAPI.Controllers
                 return BadRequest();
             }
 
-            if (value.Amount != value.InvoiceItems.Sum(it => it.Amount) )
+            string userName = null;
+            if (HttpContext.Current != null && HttpContext.Current.User != null
+               && HttpContext.Current.User.Identity.Name != null)
+            {
+                userName = HttpContext.Current.User.Identity.Name;
+            }
+
+            if (value.Amount != value.InvoiceItems.Sum(it => it.Amount))
             {
                 return BadRequest("Invocie Amount Miss Match with total Invoice Item Amount");
             }
@@ -215,7 +281,7 @@ namespace AccBroker.WebAPI.Controllers
             {
                 return BadRequest("Invocie GST Miss Match with total Invoice Item GST");
             }
-            
+
 
             var originalInvoice = _InvoiceRepo.Get()
                  .Include(i => i.InvoiceItems.Select(ii => ii.ProductInvoiceItem))
@@ -227,6 +293,7 @@ namespace AccBroker.WebAPI.Controllers
             }
 
             var invoice = value.ToDomain(originalInvoice);
+            invoice.ChangeUser = userName;
             invoice.Concurrency = Guid.NewGuid();
 
             _InvoiceRepo.Update(invoice);

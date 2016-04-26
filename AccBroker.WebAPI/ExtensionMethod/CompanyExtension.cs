@@ -10,12 +10,13 @@ namespace AccBroker.WebAPI
 {
     public static class CompanyExtension
     {
-        public static CompanyDTO ToDTO(this Company company){
+        public static CompanyDTO ToDTO(this Company company)
+        {
             return new CompanyDTO() {
                  ID = company.ID,
-                 Code = company.Code,
-                 ABN = company.ABN,
-                 Name = company.Name,
+                 Code = company.Code != null ? company.Code.Trim() : null,
+                 ABN = company.ABN != null ? company.ABN.Trim() : null,
+                 Name = company.Name != null ? company.Name.Trim() : null,
                  ChangeDate = company.ChangeDate,
                  CreateDate = company.CreateDate,
                  Concurrency = company.Concurrency,

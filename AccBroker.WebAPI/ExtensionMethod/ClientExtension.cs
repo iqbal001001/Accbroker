@@ -15,9 +15,9 @@ namespace AccBroker.WebAPI
             return new ClientDTO
             {
                 ID = client.ID,
-                Code = client.Code,
-                Name = client.Name,
-                ABN = client.ABN,
+                Code = client.Code != null ? client.Code.Trim() : null,
+                ABN = client.ABN != null ? client.ABN.Trim() : null,
+                Name = client.Name != null ? client.Name.Trim() : null,
                 ChangeDate = client.ChangeDate,
                 CreateDate = client.CreateDate,
                 Concurrency = client.Concurrency,

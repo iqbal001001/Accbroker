@@ -16,6 +16,7 @@ using System.Data.Entity.Validation;
 
 namespace AccBroker.WebAPI.Controllers
 {
+    [Authorize]
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class PaymentController : ApiController
     {
@@ -23,11 +24,19 @@ namespace AccBroker.WebAPI.Controllers
         private IInvoiceRepository _InvoiceRepo; 
         private IUnitOfWork _uow;
 
+        private string _UserName;
+
         public PaymentController(IPaymentRepository PaymentRepo, IInvoiceRepository InvoiceRepo, IUnitOfWork uow)
         {
             _PaymentRepo = PaymentRepo;
             _InvoiceRepo = InvoiceRepo;
             _uow = uow;
+
+            if (HttpContext.Current != null && HttpContext.Current.User != null
+                       && HttpContext.Current.User.Identity.Name != null)
+            {
+                _UserName = HttpContext.Current.User.Identity.Name;
+            }
         }
 
         // GET: api/Payment
@@ -184,6 +193,13 @@ namespace AccBroker.WebAPI.Controllers
                     return BadRequest();
                 }
 
+                string userName = null;
+                if (HttpContext.Current != null && HttpContext.Current.User != null
+                   && HttpContext.Current.User.Identity.Name != null)
+                {
+                    userName = HttpContext.Current.User.Identity.Name;
+                }
+
                 if (value.Amount != value.PaymentItems.Sum(it => it.Amount))
                 {
                     return BadRequest("Invocie Amount Miss Match with total Invoice Item Amount");
@@ -200,7 +216,9 @@ namespace AccBroker.WebAPI.Controllers
                 }
 
                 var payment = value.ToDomain();
-
+                payment.CreateUser = userName;
+                payment.ChangeUser = userName;
+                payment.Concurrency = Guid.NewGuid();
                 _PaymentRepo.Add(payment);
 
                 _uow.SaveChanges();
@@ -228,6 +246,13 @@ namespace AccBroker.WebAPI.Controllers
                 return BadRequest();
             }
 
+            string userName = null;
+            if (HttpContext.Current != null && HttpContext.Current.User != null
+               && HttpContext.Current.User.Identity.Name != null)
+            {
+                userName = HttpContext.Current.User.Identity.Name;
+            }
+
             if (value.Amount != value.PaymentItems.Sum(it => it.Amount))
             {
                 return BadRequest("Invocie Amount Miss Match with total Invoice Item Amount");
@@ -250,6 +275,7 @@ namespace AccBroker.WebAPI.Controllers
             }
 
             var payment = value.ToDomain(originalPayment);
+            payment.ChangeUser = userName;
             payment.Concurrency = Guid.NewGuid();
 
             _PaymentRepo.Update(payment);

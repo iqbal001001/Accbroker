@@ -12,9 +12,11 @@ using AccBroker.WebAPI;
 using AccBroker.WebAPI.Helper;
 using System.Web.Http.Cors;
 using System.Data.Entity.Validation;
+using System.Web;
 
 namespace AccBroker.WebAPI.Controllers
 {
+    [Authorize]
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ClientController : ApiController
     {
@@ -71,6 +73,58 @@ namespace AccBroker.WebAPI.Controllers
            
         }
 
+        [Route("api/client/{code}/code")]
+        public IHttpActionResult GetByCode(string code)
+        {
+            try
+            {
+                var client = _ClientRepo.Get().FirstOrDefault<Client>(c => c.Code == code);
+                if (client == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(client.ToDTO());
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+
+        }
+
+        [HttpGet]
+        [Route("api/client/{id}/{code}/codeAvailable")]
+        public IHttpActionResult CodeAvailable(int? id, string code)
+        {
+            try
+            {
+                var client = _ClientRepo.Get();
+
+                if (id != null)
+                {
+                    client = client.Where(c => c.ID != id);
+                }
+
+                client.FirstOrDefault<Client>(c => c.Code == code);
+                if (client == null)
+                {
+                    return Ok(new { CodeAvailable = false });
+                }
+                else
+                {
+                    return Ok(new { CodeAvailable = true });
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+
+        }
+
         // POST: api/Comapny
         public IHttpActionResult Post([FromBody]ClientDTO value)
         {
@@ -81,9 +135,19 @@ namespace AccBroker.WebAPI.Controllers
                     return BadRequest();
                 }
 
+                string userName = "";
+                if (HttpContext.Current != null && HttpContext.Current.User != null
+                       && HttpContext.Current.User.Identity.Name != null)
+                {
+                    userName = HttpContext.Current.User.Identity.Name;
+                }
+
                     var client = value.ToDomain();
 
                     _ClientRepo.Add(client);
+                    client.CreateUser = userName;
+                    client.ChangeUser = userName;
+                    client.Concurrency = Guid.NewGuid();
 
                     _uow.SaveChanges();
 
@@ -138,7 +202,16 @@ namespace AccBroker.WebAPI.Controllers
                     return NotFound();
                 }
 
+             string userName = "";
+             if (HttpContext.Current != null && HttpContext.Current.User != null
+                    && HttpContext.Current.User.Identity.Name != null)
+             {
+                 userName = HttpContext.Current.User.Identity.Name;
+             }
+
+
                 var client = value.ToDomain(originalClient);
+                client.ChangeUser = userName;
                 client.Concurrency = Guid.NewGuid();
 
                 _ClientRepo.Update(client);

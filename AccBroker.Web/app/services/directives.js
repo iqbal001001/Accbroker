@@ -199,4 +199,121 @@
             attrs.$set('class', 'widget-head');
         }
     });
+
+    app.directive('ccWip', ['$route', function ($route) {
+        //Usage:
+        //<li data-cc-wip
+        //wip="vm.wip"
+        //routes="vm.routes"
+        //changed-event="{{vm.wipChangedEvent}}"
+        //></li>
+        var wipRouteName = 'workinprogress';
+        var directive = {
+            controller: ['$scope', wipController],
+            link: link,
+            scope: {
+                'wip': '=',
+                'changedEvent': '@',
+                'routes': '='
+            },
+            template: getTemplate(),
+            restrict: 'A',
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch(wipIsCurrent, function (value) {
+                value ? element.addClass('current') : element.removeClass('current');
+            });
+        }
+
+        function wipIsCurrent() {
+            if (!$route.current || !$route.current.title) {
+                return false;
+            }
+            return $route.current.title.substr(0, wipRouteName.length)
+                     === wipRouteName;
+        }
+
+        function wipController($scope) {
+            $scope.wipExists = function () { return !!$scope.wip.length; };
+            $scope.wipRoute = undefined;
+            $scope.getWipClass = function () {
+                return $scope.wipExists() ? 'glyphicon glyphicon-asterisk' : '';
+            }
+
+            activate();
+
+            function activate() {
+                var eventName = $scope.changedEvent;
+                $scope.$on(eventName, function (event, data) {
+                    $scope.wip = data.wip;
+                });
+                $scope.wipRoute = $scope.routes.filter(function (r) {
+                    return r.config.title === wipRouteName;
+                })[0];
+            }
+        }
+
+        function getTemplate() {
+            return '<a href="#{{wipRoute.url}}" >'
+                + '<i data-ng-class="getWipClass()"> </i>'
+                + 'Work in Progress ({{wip.length}})'
+                + '</a>'
+            ;
+        }
+    }]);
+
+    //autofields.js directive for matching password message on join and manage form. Only for client side validation.
+    app.directive('confirmPassword', [
+        function () {
+            return {
+                restrict: 'A',
+                require: 'ngModel',
+                link: function (scope, element, attrs, ngModel) {
+                    var validate = function (viewValue) {
+                        var password = scope.$eval(attrs.confirmPassword);
+                        ngModel.$setValidity('match', ngModel.$isEmpty(viewValue) || viewValue == password);
+                        return viewValue;
+                    }
+                    ngModel.$parsers.push(validate);
+                    scope.$watch(attrs.confirmPassword, function (value) {
+                        validate(ngModel.$viewValue);
+                    })
+                }
+            }
+        }
+    ]);
+
+    // reference :  https://code.msdn.microsoft.com/AngularJS-with-Web-API-8210527d
+
+       app.directive('unique', unique);
+
+    unique.$inject = [];
+
+    function unique() {
+        var directive = {
+            require: 'ngModel',
+            link: link,
+            restrict: 'A',
+            scope: {
+                unique: '&'
+            }
+        };
+
+        return directive;
+
+        function link(scope, element, attrs, ngModel) {
+            var wrappedValidator = function (mv, vv) {
+                ngModel.$setValidity('checking', false);
+
+                var s = scope.unique({ code: mv });  //  var s = scope.$parent.vm.checkCode(mv || vv);
+                    return s.finally(function () {
+                                        ngModel.$setValidity('checking', true);
+                                    });
+            };
+
+            ngModel.$asyncValidators.unique = wrappedValidator;
+        }
+    }
 })();

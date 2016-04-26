@@ -15,12 +15,12 @@ namespace AccBroker.WebAPI
             return new ContactDTO
             {
                 ID = contact.ID,
-                ContactType = contact.ContactType,
-                Name = contact.Name,
-                Position = contact.Position,
-                HomePhone = contact.HomePhone,
-                Mobile = contact.Mobile,
-                WorkPhone = contact.WorkPhone,
+                ContactType = contact.ContactType != null ? contact.ContactType : null,
+                Name = contact.Name != null ? contact.Name.Trim() : null,
+                Position = contact.Position != null ? contact.Position.Trim() : null,
+                HomePhone = contact.HomePhone != null ? contact.HomePhone.Trim() : null,
+                Mobile = contact.Mobile != null ? contact.HomePhone.Trim() : null,
+                WorkPhone = contact.WorkPhone != null ? contact.WorkPhone.Trim() : null,
                 ClientID = contact.ClientID,
                 CompanyID = contact.CompanyID,
                 Concurrency = contact.Concurrency,

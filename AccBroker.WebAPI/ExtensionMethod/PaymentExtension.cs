@@ -15,8 +15,8 @@ namespace AccBroker.WebAPI
             return new PaymentDTO
             {
                 ID = payment.ID,
-                PaymentNo = payment.PaymentNo,
-                Description = payment.Description,
+                PaymentNo = payment.PaymentNo != null ? payment.PaymentNo.Trim() : null,
+                Description = payment.Description != null ? payment.Description.Trim() : null,
                 GST = payment.GST,
                 Amount = payment.Amount,
                 Total = payment.Amount + payment.GST,

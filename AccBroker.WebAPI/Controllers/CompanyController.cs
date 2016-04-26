@@ -12,9 +12,11 @@ using AccBroker.Domain;
 using AccBroker.WebAPI.Helper;
 using System.Web.Http.Cors;
 using System.Data.Entity.Validation;
+using System.Web.Http.Description;
 
 namespace AccBroker.WebAPI.Controllers
 {
+    [Authorize]
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     //[RoutePrefix("")]
     public class CompanyController : ApiController
@@ -30,11 +32,14 @@ namespace AccBroker.WebAPI.Controllers
 
         // GET: api/Comapny
         [Route("api/Company", Name = "CompanyList")]
+        [ResponseType(typeof(List<CompanyDTO>))]
         public IHttpActionResult Get(string sort = "ID", string fields = null,
             int page = 1, int pageSize = 5)
         {
             try
             {
+                string userName;
+
                 bool includeAddress = false;
                 List<string> lstOfFields = new List<string>();
 
@@ -82,8 +87,13 @@ namespace AccBroker.WebAPI.Controllers
 
                     HttpContext.Current.Response.Headers.Add("X-Pagination",
                         Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
-                }
 
+                    if (HttpContext.Current != null && HttpContext.Current.User != null 
+                        && HttpContext.Current.User.Identity.Name != null)
+                    {
+                        userName = HttpContext.Current.User.Identity.Name;
+                    }
+                }
 
                 var companys = _CompanyRepo.Get();
 
@@ -110,6 +120,7 @@ namespace AccBroker.WebAPI.Controllers
 
         // GET: api/Comapny/5
         [Route("api/company/{id}")]
+        [ResponseType(typeof(CompanyDTO))]
         public IHttpActionResult Get(int id)
         {
             try
@@ -134,31 +145,65 @@ namespace AccBroker.WebAPI.Controllers
 
         }
 
-        //// GET: api/Comapny/5
-        //[Route("api/company/{id}/Code")]
-        //public IHttpActionResult GetByCode(string Code)
-        //{
-        //    try
-        //    {
-        //        var company = _CompanyRepo.Get().FirstOrDefault<Company>(c => c. == id);
-        //        if (company == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            return Ok(company.ToDTO());
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return InternalServerError();
-        //    }
+        // GET: api/Comapny/5
+        [Route("api/company/{code}/code")]
+        public IHttpActionResult GetByCode(string code)
+        {
+            try
+            {
+                
+                var company = _CompanyRepo.Get().FirstOrDefault<Company>(c => c.Code == code);
+                if (company == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(company.ToDTO());
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
 
-        //}
+        }
+
+        // GET: api/Comapny/5
+        [HttpGet]
+        [Route("api/company/{id}/{code}/codeAvailable")]
+        public IHttpActionResult CodeAvailable(int? id, string code)
+        {
+            try
+            {
+                var company = _CompanyRepo.Get();
+
+                if (id != null)
+                {
+                    company = company.Where(c => c.ID != id);
+                }
+
+                company.FirstOrDefault<Company>(c => c.Code == code);
+                if (company == null)
+                {
+                    return Ok(new { CodeAvailable = false });
+                }
+                else
+                {
+                    return Ok(new { CodeAvailable = true });
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+
+        }
 
         // POST: api/Comapny
+
         [Route("api/company")]
+        [ResponseType(typeof(CompanyDTO))] // Api Documentation
         public IHttpActionResult Post([FromBody]CompanyDTO value)
         {
             try
@@ -168,19 +213,26 @@ namespace AccBroker.WebAPI.Controllers
                     return BadRequest();
                 }
 
+                string userName = "";
+                if (HttpContext.Current != null && HttpContext.Current.User != null
+                       && HttpContext.Current.User.Identity.Name != null)
+                {
+                    userName = HttpContext.Current.User.Identity.Name;
+                }
+
                 var company = value.ToDomain();
+                company.CreateUser = userName;
+                company.ChangeUser = userName;
                 company.Concurrency = Guid.NewGuid();
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
                 _CompanyRepo.Add(company);
 
                 _uow.SaveChanges();
-
-                //        HttpContext.Current.Response.Headers.Add("Access-Control-Expose-Headers",
-                //"Access-Control-Allow-Origin");
-
-                //HttpContext.Current.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:65174");
-                //HttpContext.Current.Response.Headers.Add("Access-Control-Allow-Headers", "*");
-                //HttpContext.Current.Response.Headers.Add("Access-Control-Allow-Methods", "*");
 
                 if (company.ID > 0)
                 {
@@ -198,6 +250,7 @@ namespace AccBroker.WebAPI.Controllers
 
         // PUT: api/Comapny/5
         [Route("api/company/{id}")]
+        [ResponseType(typeof(CompanyDTO))]
         public IHttpActionResult Put(int id, [FromBody]CompanyDTO value)
         {
             if (value == null)
@@ -213,7 +266,15 @@ namespace AccBroker.WebAPI.Controllers
                 return NotFound();
             }
 
+            string userName = "";
+            if (HttpContext.Current != null && HttpContext.Current.User != null
+                   && HttpContext.Current.User.Identity.Name != null)
+            {
+                userName = HttpContext.Current.User.Identity.Name;
+            }
+
             var company = value.ToDomain(originalCompany);
+            company.ChangeUser = userName;
             company.Concurrency = Guid.NewGuid();
 
             _CompanyRepo.Update(company);
@@ -258,6 +319,13 @@ namespace AccBroker.WebAPI.Controllers
                 if (_CompanyRepo.Get().First<Company>(c => c.ID == id) == null)
                 {
                     return NotFound();
+                }
+
+                string userName = "";
+                if (HttpContext.Current != null && HttpContext.Current.User != null
+                       && HttpContext.Current.User.Identity.Name != null)
+                {
+                    userName = HttpContext.Current.User.Identity.Name;
                 }
 
                 _CompanyRepo.Delete(id);

@@ -1,0 +1,80 @@
+﻿<!--<div class="container" ng-controller="manageController as vm">
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3" ng-show="message == null">
+                <h3>Manage Account</h3>
+                <p>You are logged in as {{security.user.userName}}</p>
+                <button class="btn btn-default btn-block" ng-click="vm.changePassword()" ng-hide="vm.changingPassword">Change Password</button>
+                <form name="manageForm" ng-submit="vm.updatePassword()" ng-show="vm.changingPassword">
+                    <auto:fields fields="schema" data="vm.changingPassword"></auto:fields>
+                    <div class="btn-group btn-group-justified">
+                        <a href="" class="btn btn-default" ng-class="{'btn-primary':manageForm.$valid}" tabindex="100" ng-click="vm.updatePassword()">Save</a>
+                        <a href="" ng-click="vm.cancel()" class="btn btn-default" tabindex="101">Cancel</a>
+                    </div>
+                </form>
+                <div class="" ng-if="vm.manageInfo.externalLoginProviders.length > 0">
+                    <hr />
+                    <h4>Manage Logins</h4>
+                    <div class="" ng-repeat="login in vm.manageInfo.externalLoginProviders" ng-init="userLogin = userLogin(login)">
+
+                        <button ng-class="{'disabled': userLogin.processing, googlered : (login.name === 'Google'),facebookblue : (login.name === 'Facebook'), twitterblue : (login.name === 'Twitter'), microsoftblue : (login.name === 'Microsoft')}"
+                                class="btn" ng-if="!userLogin" ng-disable="userLogin.processing" ng-click="associateExternal(login)">
+                            Add {{login.name}}
+                        </button>
+                        <button ng-class="{'disabled': userLogin.processing, googlered : (login.name === 'Google'),facebookblue : (login.name === 'Facebook'), twitterblue : (login.name === 'Twitter'), microsoftblue : (login.name === 'Microsoft')}"
+                                class="btn" ng-if="userLogin" ng-disable="userLogin.processing" ng-click="removeExternal(userLogin)">
+                            Remove {{login.name}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3" ng-hide="message == null">
+                <p class="lead" ng-bind="message"></p>
+            </div>
+        </div>
+    </div>-->
+<section class="mainbar" data-ng-controller="manage as vm">
+    <section class="matter">
+        <div class="container-fuild">
+            <div class="row">
+                <div class="widget wviolet">
+                    <div class="container" >
+                        <div class="row manage-form">
+                            <div class="col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4" ng-show="vm.message == null">
+                                <h3>Manage Account</h3>
+                                <p>You are logged in as {{security.user.userName}}</p>
+                                <button class="btn btn-default btn-block" ng-click="vm.changePassword()" ng-hide="vm.changingPassword">Change Password</button>
+                                <form name="vm.manageForm" ng-submit="vm.updatePassword()" ng-show="vm.changingPassword">
+                                    <auto:fields fields="vm.changePasswordSchema" data="vm.changingPassword"></auto:fields>
+                                    <div class="btn-group">
+                                        <a href="" class="btn btn-default" ng-class="{'btn-primary':vm.manageForm.$valid}" ng-click="vm.updatePassword()">Save</a>
+                                        <a href="" ng-click="vm.cancel()" class="btn btn-default" tabindex="101">Cancel</a>
+                                    </div>
+                                </form>
+                                <div class="" ng-if="vm.manageInfo.externalLoginProviders.length > 0">
+                                    <hr />
+                                    <h4>Manage Logins</h4>
+                                    <div class="" ng-repeat="login in vm.manageInfo.externalLoginProviders" ng-init="userLogin = vm.userLogin(login)">
+
+                                        <button ng-class="{'disabled': userLogin.processing, googlered : (login.name === 'Google'),facebookblue : (login.name === 'Facebook'), twitterblue : (login.name === 'Twitter'), microsoftblue : (login.name === 'Microsoft')}"
+                                                class="btn btn-manage" ng-if="!userLogin" ng-disable="userLogin.processing" ng-click="vm.associateExternal(login)">
+                                            Add {{login.name}}
+                                        </button>
+                                        <button ng-class="{'disabled': userLogin.processing, googlered : (login.name === 'Google'),facebookblue : (login.name === 'Facebook'), twitterblue : (login.name === 'Twitter'), microsoftblue : (login.name === 'Microsoft')}"
+                                                class="btn btn-manage" ng-if="userLogin" ng-disable="userLogin.processing" ng-click="vm.removeExternal(userLogin)">
+                                            Remove {{login.name}}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3" ng-hide="message == null">
+                                <p class="lead" ng-bind="message"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>

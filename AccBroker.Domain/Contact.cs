@@ -14,10 +14,10 @@ namespace AccBroker.Domain
         [StringLength(10)]
         public string ContactType { get; set; }
 
-        [StringLength(10)]
+        [StringLength(20)]
         public string Name { get; set; }
 
-        [StringLength(10)]
+        [StringLength(20)]
         public string Position { get; set; }
 
         [StringLength(10)]
@@ -41,6 +41,12 @@ namespace AccBroker.Domain
         public byte[] CreateDate { get; set; }
 
         public DateTime? ChangeDate { get; set; }
+
+        [StringLength(20)]
+        public string CreateUser { get; set; }
+
+        [StringLength(20)]
+        public string ChangeUser { get; set; }
 
         public virtual Client Client { get; set; }
 

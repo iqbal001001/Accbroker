@@ -6,14 +6,16 @@
         ['repository.abstract', '$http', RepositoryProduct]);
 
     function RepositoryProduct(AbstractRepository, $http) {
-        var entityName = 'Product';
+        var resource = '/api/Product';
 
         function Ctor(endpoint) {
             this.serviceId = serviceId;
-            this.entityName = entityName;
+            this.resource = resource;
             this.hostEndPoint = endpoint;
             //Exposed data access functions
             this.getProducts = getProducts;
+            this.getProductByCode = getProductByCode;
+            this.codeAvailable = codeAvailable;
             this.getCount = getCount;
             this.getProduct = getProduct;
             this.saveProduct = saveProduct;
@@ -51,21 +53,29 @@
                 query = query + "searchCode=" + search;
             }
 
-            return $http.get(this.hostEndPoint + "/api/Product" + query);
+            return $http.get(this.hostEndPoint + resource + query);
+        }
+
+        function getProductByCode(code) {
+            return $http.get(this.hostEndPoint + resource + "/" + code + "/Code");
+        }
+
+        function codeAvailable(id, code) {
+            return $http.get(this.hostEndPoint + resource + "/" + id + "/" + code + "/codeAvailable");
         }
 
         function getCount() {
-            return $http.get(this.hostEndPoint + "/api/Product");
+            return $http.get(this.hostEndPoint + resource);
         }
 
         function getProduct(ComNo) {
             //http://localhost:57148
-            return $http.get(this.hostEndPoint + "/api/Product/" + ComNo);
+            return $http.get(this.hostEndPoint + resource + "/" + ComNo);
         }
 
         function getProductCount() {
 
-            return $http.get(this.hostEndPoint + "/api/Product/" + ComNo);
+            return $http.get(this.hostEndPoint + resource + "/" + ComNo);
         }
 
         function saveProduct(Product) {
@@ -79,7 +89,7 @@
             var request = $http({
                 method: "post",
                 headers: headers,
-                url: this.hostEndPoint + "/api/Product",
+                url: this.hostEndPoint + resource,
                 data: Product
             });
             return request
@@ -96,7 +106,7 @@
             var request = $http({
                 method: "delete",
                 //headers:  headers,
-                url: this.hostEndPoint + "/api/Product/" + ComNo
+                url: this.hostEndPoint + resource + "/" + ComNo
             });
 
             return request;
@@ -113,7 +123,7 @@
             var request = $http({
                 method: "put",
                 headers: headers,
-                url: this.hostEndPoint + "/api/Product/" + ComNo,
+                url: this.hostEndPoint + resource + "/" + ComNo,
                 data: Product
             });
             return request;

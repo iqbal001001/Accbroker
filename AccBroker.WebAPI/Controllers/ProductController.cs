@@ -15,6 +15,7 @@ using System.Data.Entity.Validation;
 
 namespace AccBroker.WebAPI.Controllers
 {
+    [Authorize]
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ProductController : ApiController
     {
@@ -142,6 +143,59 @@ namespace AccBroker.WebAPI.Controllers
             {
                 return InternalServerError();
             }
+        }
+
+        // GET: api/Comapny/5
+        [Route("api/product/{code}/code")]
+        public IHttpActionResult GetByCode(string code)
+        {
+            try
+            {
+                var product = _ProductRepo.Get().FirstOrDefault<Product>(c => c.ProductCode == code);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(product.ToDTO());
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+
+        }
+
+        // GET: api/Comapny/5
+        [HttpGet]
+        [Route("api/product/{id}/{code}/codeAvailable")]
+        public IHttpActionResult CodeAvailable(int? id, string code)
+        {
+            try
+            {
+                var product = _ProductRepo.Get();
+
+                if (id != null)
+                {
+                    product = product.Where(c => c.ID != id);
+                }
+
+                product.FirstOrDefault<Product>(c => c.ProductCode == code);
+                if (product == null)
+                {
+                    return Ok(new { CodeAvailable = false });
+                }
+                else
+                {
+                    return Ok(new { CodeAvailable = true });
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
 
         }
 
@@ -156,7 +210,17 @@ namespace AccBroker.WebAPI.Controllers
                     return BadRequest();
                 }
 
+                string userName = "";
+                if (HttpContext.Current != null && HttpContext.Current.User != null
+                       && HttpContext.Current.User.Identity.Name != null)
+                {
+                    userName = HttpContext.Current.User.Identity.Name;
+                }
+
                 var product = value.ToDomain();
+                product.CreateUser = userName;
+                product.ChangeUser = userName;
+                product.Concurrency = Guid.NewGuid();
 
                 _ProductRepo.Add(product);
 
@@ -210,7 +274,15 @@ namespace AccBroker.WebAPI.Controllers
                 return NotFound();
             }
 
+            string userName = "";
+            if (HttpContext.Current != null && HttpContext.Current.User != null
+                   && HttpContext.Current.User.Identity.Name != null)
+            {
+                userName = HttpContext.Current.User.Identity.Name;
+            }
+
             var product = value.ToDomain(originalProduct);
+            product.ChangeUser = userName;
             product.Concurrency = Guid.NewGuid();
 
             _ProductRepo.Update(product);

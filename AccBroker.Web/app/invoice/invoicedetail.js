@@ -44,6 +44,8 @@
         vm.showPayment = false;
         vm.paymentTotal = 0.0;
 
+        vm.guid;
+
         vm.invoiceItemTypes = [
             { "id": 1, "name": 'Product' },
             { "id": 2, "name": 'Json' }
@@ -165,24 +167,36 @@
         function getRequestedInvoice() {
             var val = $routeParams.id;
             if (val === 'new') {
+                vm.guid = common.createGuid();
                 vm.invoice = {};
                 vm.invoice.companyId = vm.companyId;
                 vm.filteredInvoiceItems = vm.invoiceItems = [];
                 vm.invoice.invoiceItems = vm.invoiceItems;
-                return vm.newinvoice = true;
-                
+                return vm.newinvoice = true; 
+            }
+
+            var wip = datacontext.localStorage.get(
+                { entity: 'invoice', id: val });
+
+            if (wip) {
+                if (wip.state == 'Add') {
+                    vm.guid = wip.id;
+                    vm.newinvoice = true;
+                }
+                else {
+                    vm.newinvocie = false;
+                }
+                vm.invoice = wip.current;
+                vm.originalInvoice = wip.original;
+                bindData(vm.invoice);
+                return vm.hasChanges = true;
             }
 
             return datacontext.invoice.getInvoice(val)
             .then(function (data) {
                 vm.invoice = angular.copy(data.data);
                 vm.originalInvoice = angular.copy(data.data);
-                if (!data.data.invoiceItems) data.data.invoiceItems = [];
-                vm.filteredInvoiceItems = vm.invoiceItems = data.data.invoiceItems;
-                vm.paymentItems = data.data.paymentItems;
-                vm.paymentTotal = getsum(vm.paymentItems,"amount")
-                if (vm.filteredInvoiceItems && vm.filteredInvoiceItems.length > 0)
-                    gotoInvoiceItem(findByProperty(vm.filteredInvoiceItems, "sequenceNo", 1));  //gotoInvoiceItem(vm.filteredInvoiceItems[0]);
+                bindData(data.data);
                 vm.newinvoice = false;
             }, function (error) {
                 logError('Unable to get invoice ' + val);
@@ -190,8 +204,18 @@
             });
         }
 
+        function bindData(data) {
+                if (!data.invoiceItems) data.invoiceItems = [];
+                vm.filteredInvoiceItems = vm.invoiceItems = data.invoiceItems;
+                vm.paymentItems = data.paymentItems;
+                vm.paymentTotal = getsum(vm.paymentItems,"amount")
+                if (vm.filteredInvoiceItems && vm.filteredInvoiceItems.length > 0)
+                    gotoInvoiceItem(findByProperty(vm.filteredInvoiceItems, "sequenceNo", 1));  //gotoInvoiceItem(vm.filteredInvoiceItems[0]);
+               // vm.newinvoice = false;
+        }
+
         function gotoInvoiceItem(invoiceItem, idx) {
-            if (invoiceItem && invoiceItem.id) {
+            if (invoiceItem ) {   //&& invoiceItem.id
                 vm.newInvoiceItem = false;
                 var found = $filter('filter')(vm.invoiceItems, {id: invoiceItem.id}, true);
                 if (found.length) {
@@ -253,8 +277,6 @@
                // throw "Couldn't find object with id: " + id;
             }
         }
-
-       
 
         function addInvoiceItem() {
             
@@ -336,7 +358,6 @@
             return total
         }
 
-
         function search($event) {
             if ($event.keyCode === KeyCodes.esc) {
                 vm.invoiceItemSearch = '';
@@ -359,7 +380,6 @@
             return isMatch;
         }
 
-
         function gotoInvoices() {
             $location.path('/invoices');
         }
@@ -367,34 +387,37 @@
         function goBack() { $window.history.back(); }
 
         function cancel() {
+            vm.invoice = angular.copy(vm.originalInvoice);
+            removeFromStore();
             //datacontext.cancel();
             //removeWipEntity();
             //helper.replaceLocationUrlGuidWithId(vm.employee.employeeID);
             //if (vm.employee.entityAspect.entityState.isDetached()) {
-            gotoInvoices();
+           // gotoInvoices();
             //}
         }
 
         function save() {
-            if (vm.invoice.id == null) {
-                vm.newinvoice = true;
-                return SaveInvoice();
-            }
-            return datacontext.invoice.getInvoice(vm.invoice.id)
-           .then(function (data) {
-               if (data != null)
-               { vm.newinvoice = false; }
-               else
-               { vm.newinvoice = true; }
+            SaveInvoice();
+           // if (vm.invoice.id == null) {
+           //     vm.newinvoice = true;
+           //     return SaveInvoice();
+           // }
+           // return datacontext.invoice.getInvoice(vm.invoice.id)
+           //.then(function (data) {
+           //    if (data != null)
+           //    { vm.newinvoice = false; }
+           //    else
+           //    { vm.newinvoice = true; }
 
-               SaveInvoice();
-           },
-               function (error) {
-                   if (error.status == 404) {
-                       vm.newinvoice = true;
-                       SaveInvoice();
-                   }
-               })
+           //    SaveInvoice();
+           //},
+           //    function (error) {
+           //        if (error.status == 404) {
+           //            vm.newinvoice = true;
+           //            SaveInvoice();
+           //        }
+           //    })
 
         }
 
@@ -403,16 +426,26 @@
             if (vm.newinvoice === true) {
                 return datacontext.invoice.saveInvoice(vm.invoice)
                     .then(function (saveResult) {
-                        vm.isSaving = false;
+                        vm.invoice.id = saveResult.data.id;
+                        removeFromStore();
+                        vm.originalInvocie = angular.copy(vm.invoice);
+                        vm.newinvoice = false;
+                        vm.hasChanges = false;
                     }, function (error) {
+
+                    }).finally(function () {
                         vm.isSaving = false;
                     })
             }
             else {
                 return datacontext.invoice.updateInvoice(vm.invoice.id, vm.invoice)
                            .then(function (saveResult) {
-                               vm.isSaving = false;
+                               removeFromStore();
+                               vm.originalInvoice = angular.copy(vm.invoice);
+                               vm.hasChanges = false;
                            }, function (error) {
+
+                           }).finally(function () {
                                vm.isSaving = false;
                            })
             }
@@ -451,8 +484,30 @@
         $scope.$watch('vm.invoice', function(newValue, oldValue) {
             if(newValue != oldValue) {
                 vm.hasChanges = !angular.equals(vm.invoice, vm.originalInvoice);
+                if (vm.hasChanges) {
+                    addToStore();
+                }
             }
         },true);
+
+        function addToStore() {
+            var obj = {
+                entity: 'invoice',
+                id: vm.newinvoice == true ? vm.guid : vm.invoice.id,
+                orginal: vm.originalInvoice,
+                current: vm.invoice,
+                description: vm.invoice.name,
+                route: '/invoice',
+                state: vm.newinvoice == true ? 'Add' : 'update',
+                date: new Date()
+            };
+            datacontext.localStorage.add(obj);
+        }
+
+        function removeFromStore() {
+            datacontext.localStorage.remove(
+                { entity: 'invoice', id: vm.newinvoice == true ? vm.guid : vm.invoice.id });
+        }
 
         function onHasChanges() {
             //$scope.$on(config.events.hasChangesChanged,

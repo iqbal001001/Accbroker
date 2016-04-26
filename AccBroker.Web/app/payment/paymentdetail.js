@@ -33,6 +33,7 @@
         vm.deletePayment = deletePayment;
         vm.hasChanges = false;
         vm.isSaving = false;
+        vm.guid;
 
         vm.btnSelectInvoice = btnSelectInvoice;
 
@@ -99,6 +100,11 @@
 
         activate();
 
+        $rootScope.$on(config.events.companyChanged, function () {
+             //do stuff
+        })
+
+
         function activate() {
             common.activateController([getClients(), getRequestedPayment()], controllerId)
                                 .then(function () { log('Activated Paymentdetail View'); });
@@ -141,10 +147,10 @@
                 });
         }
 
-
         function getRequestedPayment() {
             var val = $routeParams.id;
             if (val === 'new') {
+                vm.guid = common.createGuid();
                 vm.payment = {};
                 vm.payment.companyId = vm.companyId;
                 vm.filteredPaymentItems = vm.paymentItems = [];
@@ -152,14 +158,28 @@
                 return vm.newpayment = true;
             }
 
+            var wip = datacontext.localStorage.get(
+                { entity: 'payment', id: val });
+
+            if (wip) {
+                if (wip.state == 'Add') {
+                    vm.guid = wip.id;
+                    vm.newpayment = true;
+                }
+                else {
+                    vm.newpayment = false;
+                }
+                vm.payment = wip.current;
+                vm.originalPayment = wip.original;
+                bindData(vm.payment);
+                return vm.hasChanges = true;
+            }
+
             return datacontext.payment.getPayment(val)
             .then(function (data) {
                 vm.payment = angular.copy(data.data);
                 vm.originalPayment = angular.copy(data.data);
-                if (!data.data.paymentItems) data.data.paymentItems = []
-                vm.filteredPaymentItems = vm.paymentItems = data.data.paymentItems;
-                if (vm.filteredPaymentItems && vm.filteredPaymentItems.length > 0) 
-                    gotoPaymentItem(findByProperty(vm.filteredPaymentItems, "sequenceNo", 1)); //gotoPaymentItem(vm.filteredPaymentItems[0]);
+                bindData(data.data);
                 vm.newpayment = false;
             }, function (error) {
                 logError('Unable to get payment ' + val);
@@ -167,8 +187,16 @@
             });
         }
 
+        function bindData(data) {
+            if (!data.paymentItems) data.paymentItems = []
+            vm.filteredPaymentItems = vm.paymentItems = data.paymentItems;
+            if (vm.filteredPaymentItems && vm.filteredPaymentItems.length > 0)
+                gotoPaymentItem(findByProperty(vm.filteredPaymentItems, "sequenceNo", 1)); //gotoPaymentItem(vm.filteredPaymentItems[0]);
+         //   vm.newpayment = false;
+        }
+
         function gotoPaymentItem(paymentItem) {
-            if (paymentItem && paymentItem.id) {
+            if (paymentItem ) {//&& paymentItem.id
                 vm.newPaymentItem = false;
                 var found = $filter('filter')(vm.paymentItems, { id: paymentItem.id }, true);
                 if (found.length) {
@@ -294,8 +322,9 @@
             return isMatch;
         }
 
-        function removePaymentItem(idx) {
+        function removePaymentItem(idx,item) {
             if (vm.paymentItems && vm.paymentItems.length > 0) {
+                vm.paymentItem = item;
                 while (vm.canSeqDown) {
                     vm.seqDown();
                 };
@@ -307,7 +336,9 @@
         }
 
         function cancel() {
-            gotoPayments();
+            vm.payment = angular.copy(vm.originalPayment);
+            removeFromStore();
+            //gotoPayments();
         }
 
         function gotoPayments() {
@@ -318,25 +349,25 @@
 
 
         function save() {
-            if (vm.payment.id == null) {
-                vm.newpayment = true;
-                return SavePayment();
-            }
-            return datacontext.payment.getPayment(vm.payment.id)
-           .then(function (data) {
-               if (data != null)
-               { vm.newpayment = false; }
-               else
-               { vm.newpayment = true; }
+           // if (vm.payment.id == null) {
+           //     vm.newpayment = true;
+           //     return SavePayment();
+           // }
+           // return datacontext.payment.getPayment(vm.payment.id)
+           //.then(function (data) {
+           //    if (data != null)
+           //    { vm.newpayment = false; }
+           //    else
+           //    { vm.newpayment = true; }
 
-               SavePayment();
-           },
-               function (error) {
-                   if (error.status == 404) {
-                       vm.newpayment = true;
+           //    SavePayment();
+           //},
+           //    function (error) {
+           //        if (error.status == 404) {
+           //            vm.newpayment = true;
                        SavePayment();
-                   }
-               })
+           //        }
+           //    })
 
         }
 
@@ -345,16 +376,26 @@
             if (vm.newpayment === true) {
                 return datacontext.payment.savePayment(vm.payment)
                     .then(function (saveResult) {
-                        vm.isSaving = false;
+                        vm.payment.id = saveResult.data.id;
+                        removeFromStore();
+                        vm.originalPayment = angular.copy(vm.payment);
+                        vm.newpayment = false;
+                        vm.hasChanges = false;
                     }, function (error) {
+                     
+                    }).finally(function () {
                         vm.isSaving = false;
                     })
             }
             else {
                 return datacontext.payment.updatePayment(vm.payment.id, vm.payment)
                            .then(function (saveResult) {
-                               vm.isSaving = false;
+                               removeFromStore();
+                               vm.originalPayment = angular.copy(vm.payment);
+                               vm.hasChanges = false;
                            }, function (error) {
+                               
+                           }).finally(function () {
                                vm.isSaving = false;
                            })
             }
@@ -408,9 +449,28 @@
         $scope.$watch('vm.payment', function (newValue, oldValue) {
             if (newValue != oldValue) {
                 vm.hasChanges = !angular.equals(vm.payment, vm.originalPayment);
+                if (vm.hasChanges) {
+                    addToStore();
+                }
             }
         }, true);
 
+        function addToStore() {
+            var obj = {
+                entity: 'payment',
+                id: vm.newpayment == true ? vm.guid : vm.payment.id,
+                orginal: vm.originalPayment,
+                current: vm.payment,
+                description: vm.payment.paymentNo,
+                route: '/payment',
+                state: vm.newpayment == true ? 'Add' : 'update',
+                date: new Date()
+            };
+            datacontext.localStorage.add(obj);
+        }
 
+        function removeFromStore() {
+            datacontext.localStorage.remove({ entity: 'payment', id: vm.newpayment == true ? vm.guid : vm.payment.id });
+        }
     }
 })();

@@ -1,4 +1,4 @@
-﻿<nav class="navbar navbar-fixed-top navbar-inverse">
+﻿<nav class="navbar navbar-fixed-top navbar-inverse" ng-controller="topnav as vm">
     <div class="navbar-header">
         <a href="/" class="navbar-brand"><span class="brand-title">Hot Towel Angular</span></a>
         <a class="btn navbar-btn navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -24,6 +24,29 @@
                     <a href="http://www.angularjs.org" target="_blank">
                         <img src="../../Content/images/AngularJS-small.png" />
                     </a>
+                </li>
+            </ul>
+            <!--<ul class="nav navbar-nav" ng-if="security.user" style="display: block;">
+                <li ng-class="{ active: vm.isActive('/scan')}"><a href="/scan">Scan</a></li>
+            </ul>-->
+            <ul class="nav navbar-nav navbar-right" ng-if="security.user" style="display: block;">
+                <li ng-class="{ active: vm.isActive('/manage')}">
+                    <a href="/manage" ng-if="security.user" class="btn gravatar image-button image-left" style="padding: 0px 10px;">
+                        {{ security.user.fullName }}
+                        <!--<img src="../../Content/images/me.jpg" />-->
+                    </a>
+                </li>
+                <li>
+                    <a ng-click="!security.user || security.logout()">Logout</a>
+                </li>
+            </ul>
+
+            <ul ng-if="!security.user" class="nav navbar-nav navbar-right" style="display: block;">
+                <li ng-class="{ active: vm.isActive('/join')}">
+                    <a ng-href="/#/join">Register</a>
+                </li>
+                <li ng-class="{ active: vm.isActive('/login')}">
+                    <a ng-href="/#/login">Login</a>
                 </li>
             </ul>
         </div>

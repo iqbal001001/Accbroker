@@ -16,11 +16,14 @@ using Microsoft.Owin.Security.OAuth;
 using AccBroker.WebAPI.Models;
 using AccBroker.WebAPI.Providers;
 using AccBroker.WebAPI.Results;
+using AccBroker.WebAPI.Helper;
+using System.Web.Http.Cors;
 
 namespace AccBroker.WebAPI.Controllers
 {
     [Authorize]
     [RoutePrefix("api/Account")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class AccountController : ApiController
     {
         private const string LocalLoginProvider = "Local";
@@ -113,6 +116,50 @@ namespace AccBroker.WebAPI.Controllers
                 ExternalLoginProviders = GetExternalLogins(returnUrl, generateState)
             };
         }
+
+        #region Reset Password
+        // POST api/Account/ForgotPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ForgotPassword")]
+        public async Task<IHttpActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var user = await UserManager.FindByNameAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                ModelState.AddModelError("", "That user does not exist");
+                return BadRequest(ModelState);
+            }
+
+            var code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            var callbackUrl = Utility.AbsoluteUrl("/ResetPassword?code=" + HttpUtility.UrlEncode(code));
+            await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+            return Ok(new { message = "We've emailed you a link to reset your password!" });
+        }
+
+        //
+        // POST: /Account/ResetPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ResetPassword")]
+        public async Task<IHttpActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var user = await UserManager.FindByNameAsync(model.Email);
+
+            if (user != null)
+            {
+                var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+                IHttpActionResult errorResult = GetErrorResult(result);
+                if (errorResult != null) return errorResult;
+            }
+
+            return Ok(new { message = "Your Password has been reset." });
+        }
+        #endregion
 
         // POST api/Account/ChangePassword
         [Route("ChangePassword")]

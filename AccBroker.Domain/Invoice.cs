@@ -21,7 +21,7 @@ namespace AccBroker.Domain
         [StringLength(10)]
         public string InvoiceNo { get; set; }
 
-        [StringLength(10)]
+        [StringLength(100)]
         public string InvoiceDescription { get; set; }
 
         public int? BillingAddress { get; set; }
@@ -48,6 +48,12 @@ namespace AccBroker.Domain
         public byte[] CreateDate { get; set; }
 
         public DateTime? ChangeDate { get; set; }
+
+        [StringLength(20)]
+        public string CreateUser { get; set; }
+
+        [StringLength(20)]
+        public string ChangeUser { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime? InvoiceDate { get; set; }

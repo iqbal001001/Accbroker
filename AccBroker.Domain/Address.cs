@@ -12,19 +12,19 @@ namespace AccBroker.Domain
     {
         public int ID { get; set; }
 
-        [StringLength(10)]
+        [StringLength(30)]
         public string AddressLine1 { get; set; }
 
-        [StringLength(10)]
+        [StringLength(30)]
         public string AddressLine2 { get; set; }
 
-        [StringLength(10)]
+        [StringLength(20)]
         public string Suburb { get; set; }
 
-        [StringLength(10)]
+        [StringLength(3)]
         public string State { get; set; }
 
-        [StringLength(10)]
+        [StringLength(4)]
         public string PostCode { get; set; }
 
         public int? ClientID { get; set; }
@@ -41,6 +41,12 @@ namespace AccBroker.Domain
         public byte[] CreateDate { get; set; }
 
         public DateTime? ChangeDate { get; set; }
+
+        [StringLength(20)]
+        public string CreateUser { get; set; }
+
+        [StringLength(20)]
+        public string ChangeUser { get; set; }
 
         public virtual Client Client { get; set; }
 

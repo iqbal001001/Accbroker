@@ -20,7 +20,7 @@ namespace AccBroker.WebAPI
                 GST = invoiceItem.GST,
                 Amount = invoiceItem.Amount,
                 Total = invoiceItem.Amount + invoiceItem.GST,
-                Description = invoiceItem.Description,
+                Description = invoiceItem.Description != null ? invoiceItem.Description.Trim() : null,
                 InvoiceType = invoiceItem.InvocieType,
                 InvoiceID = invoiceItem.InvoiceID,
                 Concurrency = invoiceItem.Concurrency,

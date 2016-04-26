@@ -23,7 +23,7 @@
         public string ProductName { get; set; }
 
         [Required]
-        [StringLength(10)]
+        [StringLength(6)]
         public string ProductCode { get; set; }
 
         public decimal UnitPrice { get; set; }

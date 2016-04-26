@@ -31,7 +31,7 @@ namespace AccBroker.Domain
         [Required]
         public string ProductName { get; set; }
 
-        [StringLength(10)]
+        [StringLength(100)]
         public string ProductDescription { get; set; }
 
         public decimal? CostPrice { get; set; }
@@ -39,6 +39,12 @@ namespace AccBroker.Domain
         public decimal SellPrice { get; set; }
 
         public DateTime? ChangeDate { get; set; }
+
+        [StringLength(20)]
+        public string CreateUser { get; set; }
+
+        [StringLength(20)]
+        public string ChangeUser { get; set; }
 
         public virtual ICollection<ProductInvoiceItem> ProductInvoiceItems { get; set; }
     }

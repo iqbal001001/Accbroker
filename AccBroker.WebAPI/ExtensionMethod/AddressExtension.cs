@@ -15,11 +15,11 @@ namespace AccBroker.WebAPI
             return new AddressDTO
             {
                 ID = address.ID,
-                AddressLine1 = address.AddressLine1,
-                AddressLine2 = address.AddressLine2,
-                Suburb = address.Suburb,
-                State = address.State,
-                PostCode = address.PostCode,
+                AddressLine1 = address.AddressLine1 != null ? address.AddressLine1.Trim() : null,
+                AddressLine2 = address.AddressLine2 != null ? address.AddressLine2.Trim() : null,
+                Suburb = address.Suburb != null ? address.Suburb.Trim() : null,
+                State = address.State != null ? address.State.Trim() : null,
+                PostCode = address.PostCode != null ? address.PostCode.Trim() : null,
                 AddressType = address.AddressType,
                 ClientID = address.ClientID,
                 CompanyID = address.CompanyID,

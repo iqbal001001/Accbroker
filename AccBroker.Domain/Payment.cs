@@ -19,7 +19,7 @@ namespace AccBroker.Domain
         [StringLength(10)]
         public string PaymentNo { get; set; }
 
-        [StringLength(10)]
+        [StringLength(100)]
         public string Description { get; set; }
 
         public decimal? GST { get; set; }
@@ -39,6 +39,12 @@ namespace AccBroker.Domain
         public byte[] CreateDate { get; set; }
 
         public DateTime? ChangeDate { get; set; }
+
+        [StringLength(20)]
+        public string CreateUser { get; set; }
+
+        [StringLength(20)]
+        public string ChangeUser { get; set; }
 
         public int? CompanyID { get; set; }
 

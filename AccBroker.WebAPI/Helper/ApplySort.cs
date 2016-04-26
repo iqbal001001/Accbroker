@@ -7,7 +7,7 @@ using System.Web;
 
 namespace AccBroker.WebAPI.Helper
 {
-    public static class Class1
+    public static class IQueryableExtension
     {
         public static IQueryable<TEntity> ApplySort<TEntity>(this IQueryable<TEntity> source, string sort) 
             where TEntity : class

@@ -17,8 +17,7 @@ namespace AccBroker.WebAPI
                 ID = paymentItem.ID,
                 SequenceNo = paymentItem.SequenceNo,
                 PaymentID = paymentItem.PaymentID,
-                Description = paymentItem.Description,
-                GST = paymentItem.GST,
+                Description = paymentItem.Description != null ? paymentItem.Description.Trim() : null,
                 Amount = paymentItem.Amount,
                 InvoiceID = paymentItem.InvoiceID,
                 InvoiceNo = paymentItem.InvoiceNo,
@@ -64,7 +63,6 @@ namespace AccBroker.WebAPI
                 originalPaymentItem.SequenceNo = paymentItem.SequenceNo;
                 originalPaymentItem.PaymentID = paymentItem.PaymentID;
                 originalPaymentItem.Description = paymentItem.Description;
-                originalPaymentItem.GST = paymentItem.GST;
                 originalPaymentItem.Amount = paymentItem.Amount;
                 originalPaymentItem.InvoiceID = paymentItem.InvoiceID;
                 originalPaymentItem.InvoiceNo = paymentItem.InvoiceNo;
@@ -80,7 +78,6 @@ namespace AccBroker.WebAPI
                 SequenceNo = paymentItem.SequenceNo,
                 PaymentID = paymentItem.PaymentID,
                 Description = paymentItem.Description,
-                GST = paymentItem.GST,
                 Amount = paymentItem.Amount,
                 InvoiceID = paymentItem.InvoiceID,
                 InvoiceNo = paymentItem.InvoiceNo,
